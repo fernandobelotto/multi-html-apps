@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hangman Game</title>
+    <link rel="stylesheet" href="../navbar.css" />
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f2f5;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #1a1a1a;
+        margin-bottom: 20px;
+      }
+
+      .game-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+      }
+
+      .hangman-drawing {
+        flex: 1;
+        min-width: 300px;
+        max-width: 400px;
+        aspect-ratio: 1;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 10px;
+        position: relative;
+      }
+
+      .game-info {
+        flex: 1;
+        min-width: 300px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .word-display {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .letter-box {
+        width: 40px;
+        height: 40px;
+        border-bottom: 3px solid #2c3e50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #2c3e50;
+        text-transform: uppercase;
+      }
+
+      .keyboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+        gap: 5px;
+        margin-bottom: 20px;
+      }
+
+      .key {
+        padding: 10px;
+        border: none;
+        border-radius: 6px;
+        background-color: #f8f9fa;
+        cursor: pointer;
+        font-size: 1em;
+        transition: all 0.2s;
+        text-transform: uppercase;
+      }
+
+      .key:hover:not(:disabled) {
+        background-color: #e9ecef;
+      }
+
+      .key:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .key.correct {
+        background-color: #2ecc71;
+        color: white;
+      }
+
+      .key.wrong {
+        background-color: #e74c3c;
+        color: white;
+      }
+
+      .game-status {
+        text-align: center;
+        font-size: 1.2em;
+        margin: 20px 0;
+        padding: 10px;
+        border-radius: 6px;
+        background-color: #f8f9fa;
+      }
+
+      .category {
+        text-align: center;
+        font-size: 1.1em;
+        color: #666;
+        margin-bottom: 10px;
+      }
+
+      .stats {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #2c3e50;
+      }
+
+      .stat-label {
+        font-size: 0.9em;
+        color: #666;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .action-btn {
+        padding: 12px 24px;
+        font-size: 1em;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: white;
+      }
+
+      .new-game-btn {
+        background-color: #2ecc71;
+      }
+
+      .new-game-btn:hover {
+        background-color: #27ae60;
+      }
+
+      .hint-btn {
+        background-color: #3498db;
+      }
+
+      .hint-btn:hover {
+        background-color: #2980b9;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+      }
+
+      .modal h2 {
+        margin-top: 0;
+        color: #2c3e50;
+      }
+
+      .modal p {
+        margin: 15px 0;
+        color: #34495e;
+      }
+
+      .modal button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        background-color: #2ecc71;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .modal button:hover {
+        background-color: #27ae60;
+      }
+
+      @media (max-width: 600px) {
+        .letter-box {
+          width: 30px;
+          height: 30px;
+          font-size: 1.2em;
+        }
+
+        .key {
+          padding: 8px;
+          font-size: 0.9em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav id="navbar"></nav>
+
+    <div class="container">
+      <h1>Hangman</h1>
+
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-value" id="wins">0</div>
+          <div class="stat-label">Wins</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="losses">0</div>
+          <div class="stat-label">Losses</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="streak">0</div>
+          <div class="stat-label">Streak</div>
+        </div>
+      </div>
+
+      <div class="game-container">
+        <canvas class="hangman-drawing" id="hangman-canvas"></canvas>
+
+        <div class="game-info">
+          <div class="category" id="category">Category: Animals</div>
+
+          <div class="word-display" id="word-display">
+            <!-- Letter boxes will be generated by JavaScript -->
+          </div>
+
+          <div class="keyboard" id="keyboard">
+            <!-- Keys will be generated by JavaScript -->
+          </div>
+
+          <div class="game-status" id="game-status">
+            Guesses remaining: <span id="guesses">6</span>
+          </div>
+
+          <div class="action-buttons">
+            <button class="action-btn new-game-btn" id="new-game">
+              New Game
+            </button>
+            <button class="action-btn hint-btn" id="hint">Hint</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="game-over-modal">
+      <div class="modal-content">
+        <h2 id="modal-title">Game Over!</h2>
+        <p id="modal-message"></p>
+        <button id="modal-button">Play Again</button>
+      </div>
+    </div>
+
+    <script src="../navbar.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

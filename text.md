@@ -58,7 +58,7 @@
 
 ✅ Minesweeper: Recreate the classic minesweeper puzzle game.
 
-📝 Hangman Game: A word-guessing game where users try to reveal the hidden word.
+✅ Hangman: Create a word-guessing game with multiple categories.
 
 📝 Chess Game: A simple chess game for two players on a minimal board.
 
