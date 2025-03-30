@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Online Radio Streamer</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="radio-player">
+      <div class="now-playing">
+        <div class="station-logo">
+          <i class="fas fa-broadcast-tower"></i>
+        </div>
+        <div class="station-info">
+          <div class="station-name">Select a Station</div>
+          <div class="station-genre">Online Radio Streamer</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="playBtn" class="control-btn control-btn-large" disabled>
+          <i class="fas fa-play"></i>
+        </button>
+        <div class="volume-control">
+          <i class="fas fa-volume-up"></i>
+          <input type="range" id="volumeSlider" min="0" max="100" value="80" />
+        </div>
+      </div>
+
+      <div class="stations-container">
+        <h3>Available Stations</h3>
+        <div class="stations-grid" id="stationsList">
+          <!-- Stations will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <div class="favorites-container">
+        <h3>Favorite Stations</h3>
+        <div class="stations-grid" id="favoritesList">
+          <!-- Favorites will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <div class="connection-status">
+          <i class="fas fa-circle"></i>
+          <span id="statusText">Ready to play</span>
+        </div>
+        <div class="audio-quality" id="audioQuality">Quality: 128kbps</div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
