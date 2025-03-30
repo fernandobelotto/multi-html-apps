@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Music Player</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="music-player">
+      <div class="player-header">
+        <input
+          type="file"
+          id="fileInput"
+          accept="audio/*"
+          multiple
+          class="file-input"
+        />
+        <label for="fileInput" class="file-input-label">
+          <i class="fas fa-plus"></i> Add Music
+        </label>
+      </div>
+
+      <div class="playlist">
+        <h3>Playlist</h3>
+        <ul id="playlist"></ul>
+      </div>
+
+      <div class="now-playing">
+        <div class="song-info">
+          <div class="song-title">No song playing</div>
+          <div class="song-artist">Upload a song to start</div>
+        </div>
+
+        <div class="progress-container">
+          <span id="currentTime">0:00</span>
+          <div class="progress-bar">
+            <div class="progress"></div>
+          </div>
+          <span id="duration">0:00</span>
+        </div>
+
+        <div class="controls">
+          <button id="prevBtn" class="control-btn">
+            <i class="fas fa-backward"></i>
+          </button>
+          <button id="playBtn" class="control-btn">
+            <i class="fas fa-play"></i>
+          </button>
+          <button id="nextBtn" class="control-btn">
+            <i class="fas fa-forward"></i>
+          </button>
+          <div class="volume-control">
+            <i class="fas fa-volume-up"></i>
+            <input
+              type="range"
+              id="volumeSlider"
+              min="0"
+              max="100"
+              value="100"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

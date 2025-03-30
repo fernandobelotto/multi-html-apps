@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Podcast Player</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="podcast-player">
+      <div class="player-header">
+        <input
+          type="file"
+          id="fileInput"
+          accept="audio/*"
+          multiple
+          class="file-input"
+        />
+        <label for="fileInput" class="file-input-label">
+          <i class="fas fa-podcast"></i> Add Episodes
+        </label>
+      </div>
+
+      <div class="episode-info">
+        <div class="podcast-artwork">
+          <i class="fas fa-podcast"></i>
+        </div>
+        <div class="info-text">
+          <div class="episode-title">No episode playing</div>
+          <div class="podcast-name">Upload an episode to start</div>
+          <div class="episode-date">--/--/----</div>
+        </div>
+      </div>
+
+      <div class="playback-speed">
+        <button id="speedBtn">1.0x</button>
+      </div>
+
+      <div class="progress-container">
+        <span id="currentTime">0:00</span>
+        <div class="progress-bar">
+          <div class="progress"></div>
+        </div>
+        <span id="duration">0:00</span>
+      </div>
+
+      <div class="controls">
+        <button id="backwardBtn" class="control-btn">
+          <i class="fas fa-backward-step"></i>
+          <span>15s</span>
+        </button>
+        <button id="playBtn" class="control-btn control-btn-large">
+          <i class="fas fa-play"></i>
+        </button>
+        <button id="forwardBtn" class="control-btn">
+          <i class="fas fa-forward-step"></i>
+          <span>30s</span>
+        </button>
+        <div class="volume-control">
+          <i class="fas fa-volume-up"></i>
+          <input type="range" id="volumeSlider" min="0" max="100" value="100" />
+        </div>
+      </div>
+
+      <div class="episodes-list">
+        <h3>Episodes</h3>
+        <ul id="episodesList"></ul>
+      </div>
+
+      <div class="notes-section">
+        <h3>Episode Notes</h3>
+        <textarea
+          id="episodeNotes"
+          placeholder="Add your notes for this episode..."
+        ></textarea>
+        <div class="timestamp-notes">
+          <h4>Timestamps</h4>
+          <button id="addTimestamp" class="timestamp-btn">
+            <i class="fas fa-plus"></i> Add Timestamp
+          </button>
+          <ul id="timestampsList"></ul>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

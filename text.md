@@ -64,13 +64,13 @@
 
 ✅ Checkers Game: Play the classic game of checkers with basic rules.
 
-📝 Drawing Canvas: A blank canvas for freehand drawing or sketching.
+✅ Drawing Canvas: A blank canvas for freehand drawing or sketching.
 
-📝 Doodle Pad: A minimalist app dedicated to casual doodling.
+✅ Doodle Pad: A minimalist app dedicated to casual doodling.
 
-📝 Music Player: Play locally stored audio files with basic controls.
+✅ Music Player: Play locally stored audio files with basic controls.
 
-📝 Podcast Player: Organize and play downloaded podcast episodes.
+✅ Podcast Player: Organize and play downloaded podcast episodes.
 
 📝 Online Radio Streamer: Stream a selection of pre-chosen radio stations.
 

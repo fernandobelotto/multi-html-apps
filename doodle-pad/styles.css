@@ -1,0 +1,122 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.controls {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.control-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-group:last-child {
+    margin-bottom: 0;
+}
+
+label {
+    font-size: 14px;
+    color: #555;
+    min-width: 70px;
+}
+
+#doodleCanvas {
+    border: 3px solid #ddd;
+    border-radius: 10px;
+    cursor: crosshair;
+    background-color: white;
+}
+
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #ff6b6b, #ff8787);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
+}
+
+button.active {
+    background: linear-gradient(145deg, #4dabf7, #339af0);
+    box-shadow: 0 4px 12px rgba(51, 154, 240, 0.2);
+}
+
+#colorPicker {
+    width: 50px;
+    height: 30px;
+    padding: 0;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+#brushSize {
+    width: 100px;
+    height: 6px;
+    -webkit-appearance: none;
+    background: #ddd;
+    border-radius: 3px;
+    outline: none;
+}
+
+#brushSize::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #ff6b6b;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+#brushStyle {
+    padding: 5px 10px;
+    border-radius: 15px;
+    border: 2px solid #ddd;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#randomColor {
+    background: linear-gradient(145deg, #845ef7, #7950f2);
+}
+
+#save {
+    background: linear-gradient(145deg, #51cf66, #40c057);
+} 

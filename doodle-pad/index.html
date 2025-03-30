@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doodle Pad</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="controls">
+        <div class="control-group">
+          <label>Color:</label>
+          <input type="color" id="colorPicker" value="#000000" />
+          <button id="randomColor">Random</button>
+        </div>
+        <div class="control-group">
+          <label>Brush Style:</label>
+          <select id="brushStyle">
+            <option value="round">Round</option>
+            <option value="square">Square</option>
+            <option value="rainbow">Rainbow</option>
+            <option value="pattern">Pattern</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Size:</label>
+          <input type="range" id="brushSize" min="1" max="50" value="5" />
+          <span id="brushSizeValue">5px</span>
+        </div>
+        <div class="control-group buttons">
+          <button id="clearCanvas">Clear</button>
+          <button id="eraser">Eraser</button>
+          <button id="pencil" class="active">Pencil</button>
+          <button id="save">Save</button>
+        </div>
+      </div>
+      <canvas id="doodleCanvas"></canvas>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
