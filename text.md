@@ -44,15 +44,17 @@
 
 ✅ Digital Diary: A private journal for daily reflections or notes.
 
-📝 Flashcard Maker: Create and review digital flashcards for studying.
+✅ Flashcard Maker: Create and review digital flashcards for studying.
 
-📝 Trivia Quiz App: Present a series of general knowledge or themed trivia questions.
+✅ Trivia Quiz App: Present a series of general knowledge or themed trivia questions.
 
-📝 Memory Matching Game: A card-flip game where players match pairs of cards.
+✅ Memory Matching Game: A card-flip game where players match pairs of cards.
 
-📝 Tic Tac Toe Game: A simple two-player tic tac toe with a clean interface.
+✅ Drawing Board: Create digital drawings with various tools and colors.
 
-📝 Sudoku Game: Offer basic sudoku puzzles with multiple difficulty levels.
+✅ Tic Tac Toe Game: A simple two-player tic tac toe with a clean interface.
+
+✅ Sudoku Game: Offer basic sudoku puzzles with multiple difficulty levels.
 
 📝 Minesweeper: Recreate the classic minesweeper puzzle game.
 
