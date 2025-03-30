@@ -30,21 +30,19 @@
 
 ✅ Expense Tracker: Input and categorize daily expenses with a running total.
 
-✅ Budget Planner: Create a simple budget by tracking income and planned expenditures.
-
 ✅ Water Intake Reminder: Notify users at intervals to drink water throughout the day.
 
 ✅ Sleep Tracker: Log sleep duration and basic sleep quality without deep analysis.
 
 ✅ BMI Calculator: Input height and weight to compute body mass index.
 
-📝 Meal Planner: Plan meals for the week with a simple calendar interface.
+✅ Meal Planner: Plan meals for the week with a simple calendar interface.
 
-📝 Grocery List Manager: Build and check off items on your shopping list.
+✅ Grocery List Manager: Build and check off items on your shopping list.
 
-📝 Recipe Organizer: Save, categorize, and retrieve your favorite recipes.
+✅ Recipe Organizer: Save, categorize, and retrieve your favorite recipes.
 
-📝 Digital Diary: A private journal for daily reflections or notes.
+✅ Digital Diary: A private journal for daily reflections or notes.
 
 📝 Flashcard Maker: Create and review digital flashcards for studying.
 
