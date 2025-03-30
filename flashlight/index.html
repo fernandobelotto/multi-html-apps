@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flashlight</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: #000;
+        color: white;
+        font-family: Arial, sans-serif;
+        transition: background-color 0.3s;
+      }
+      .flashlight-container {
+        text-align: center;
+      }
+      .power-button {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: #333;
+        border: 3px solid #444;
+        cursor: pointer;
+        position: relative;
+        margin: 20px;
+        transition: all 0.3s;
+      }
+      .power-button:after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        background: #666;
+        border-radius: 50%;
+      }
+      .power-button.on {
+        background: #4caf50;
+        border-color: #45a049;
+        box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+      }
+      .power-button.on:after {
+        background: #fff;
+      }
+      .status {
+        margin-top: 20px;
+        font-size: 18px;
+      }
+      .note {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #666;
+        max-width: 300px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="flashlight-container">
+      <div
+        class="power-button"
+        id="powerButton"
+        onclick="toggleFlashlight()"
+      ></div>
+      <div class="status" id="status">Flashlight is OFF</div>
+      <div class="note">
+        Note: This is a simulated flashlight using screen brightness. For a real
+        flashlight app, device hardware access would be required.
+      </div>
+    </div>
+
+    <script>
+      let isOn = false;
+
+      function toggleFlashlight() {
+        isOn = !isOn;
+        const powerButton = document.getElementById("powerButton");
+        const status = document.getElementById("status");
+
+        if (isOn) {
+          document.body.style.background = "#fff";
+          powerButton.classList.add("on");
+          status.textContent = "Flashlight is ON";
+        } else {
+          document.body.style.background = "#000";
+          powerButton.classList.remove("on");
+          status.textContent = "Flashlight is OFF";
+        }
+      }
+
+      // Handle keyboard events
+      document.addEventListener("keydown", function (e) {
+        if (e.code === "Space") {
+          toggleFlashlight();
+        }
+      });
+
+      // Prevent screen from going to sleep when flashlight is on
+      function keepScreenAwake() {
+        if (isOn && navigator.wakeLock) {
+          navigator.wakeLock
+            .request("screen")
+            .catch((err) => console.log("Wake Lock error:", err));
+        }
+      }
+
+      // Try to keep screen awake when flashlight is turned on
+      setInterval(keepScreenAwake, 30000);
+    </script>
+  </body>
+</html>

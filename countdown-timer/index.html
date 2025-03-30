@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Countdown Timer</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: #f0f0f0;
+      }
+      .timer-container {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 300px;
+      }
+      .display {
+        font-size: 48px;
+        font-family: monospace;
+        margin: 20px 0;
+        color: #333;
+      }
+      .input-group {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      .input-group input {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: center;
+      }
+      .input-label {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+      }
+      .buttons {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      button {
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .start {
+        background: #4caf50;
+        color: white;
+      }
+      .start:hover {
+        background: #45a049;
+      }
+      .stop {
+        background: #f44336;
+        color: white;
+      }
+      .stop:hover {
+        background: #da190b;
+      }
+      .reset {
+        background: #ff9800;
+        color: white;
+        grid-column: span 2;
+      }
+      .reset:hover {
+        background: #f57c00;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="timer-container">
+      <div class="input-group">
+        <div>
+          <input type="number" id="hours" min="0" max="99" value="0" />
+          <div class="input-label">Hours</div>
+        </div>
+        <div>
+          <input type="number" id="minutes" min="0" max="59" value="0" />
+          <div class="input-label">Minutes</div>
+        </div>
+        <div>
+          <input type="number" id="seconds" min="0" max="59" value="0" />
+          <div class="input-label">Seconds</div>
+        </div>
+      </div>
+      <div class="display" id="display">00:00:00</div>
+      <div class="buttons">
+        <button class="start" id="startBtn" onclick="startTimer()">
+          Start
+        </button>
+        <button class="stop" id="stopBtn" onclick="stopTimer()" disabled>
+          Stop
+        </button>
+        <button class="reset" id="resetBtn" onclick="resetTimer()">
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let timeLeft;
+      let timerInterval;
+      let isRunning = false;
+      let originalTime;
+
+      const display = document.getElementById("display");
+      const startBtn = document.getElementById("startBtn");
+      const stopBtn = document.getElementById("stopBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const hoursInput = document.getElementById("hours");
+      const minutesInput = document.getElementById("minutes");
+      const secondsInput = document.getElementById("seconds");
+
+      function startTimer() {
+        if (!isRunning) {
+          if (!timeLeft) {
+            // Get time from inputs
+            const hours = parseInt(hoursInput.value) || 0;
+            const minutes = parseInt(minutesInput.value) || 0;
+            const seconds = parseInt(secondsInput.value) || 0;
+
+            timeLeft = (hours * 3600 + minutes * 60 + seconds) * 1000;
+            originalTime = timeLeft;
+
+            if (timeLeft <= 0) return;
+          }
+
+          isRunning = true;
+          const startTime = Date.now();
+
+          timerInterval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            timeLeft = originalTime - elapsed;
+
+            if (timeLeft <= 0) {
+              clearInterval(timerInterval);
+              timeLeft = 0;
+              isRunning = false;
+              updateButtons();
+              playAlarm();
+            }
+
+            updateDisplay();
+          }, 10);
+
+          updateButtons();
+          disableInputs(true);
+        }
+      }
+
+      function stopTimer() {
+        if (isRunning) {
+          isRunning = false;
+          clearInterval(timerInterval);
+          updateButtons();
+          disableInputs(false);
+        }
+      }
+
+      function resetTimer() {
+        clearInterval(timerInterval);
+        isRunning = false;
+        timeLeft = 0;
+        originalTime = 0;
+
+        hoursInput.value = "0";
+        minutesInput.value = "0";
+        secondsInput.value = "0";
+
+        updateDisplay();
+        updateButtons();
+        disableInputs(false);
+      }
+
+      function updateDisplay() {
+        const hours = Math.floor(timeLeft / 3600000);
+        const minutes = Math.floor((timeLeft % 3600000) / 60000);
+        const seconds = Math.floor((timeLeft % 60000) / 1000);
+
+        display.textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+      }
+
+      function updateButtons() {
+        startBtn.disabled = isRunning;
+        stopBtn.disabled = !isRunning;
+        resetBtn.disabled = isRunning;
+      }
+
+      function disableInputs(disabled) {
+        hoursInput.disabled = disabled;
+        minutesInput.disabled = disabled;
+        secondsInput.disabled = disabled;
+      }
+
+      function pad(number) {
+        return number.toString().padStart(2, "0");
+      }
+
+      function playAlarm() {
+        // Create and play a simple beep sound
+        const context = new (window.AudioContext ||
+          window.webkitAudioContext)();
+        const oscillator = context.createOscillator();
+        const gainNode = context.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(context.destination);
+
+        oscillator.type = "sine";
+        oscillator.frequency.value = 440;
+        gainNode.gain.value = 0.5;
+
+        oscillator.start();
+
+        // Stop the sound after 1 second
+        setTimeout(() => {
+          oscillator.stop();
+          alert("Timer finished!");
+        }, 1000);
+      }
+
+      // Handle keyboard shortcuts
+      document.addEventListener("keydown", function (e) {
+        switch (e.code) {
+          case "Space":
+            e.preventDefault();
+            if (isRunning) {
+              stopTimer();
+            } else {
+              startTimer();
+            }
+            break;
+          case "KeyR":
+            if (!isRunning) {
+              resetTimer();
+            }
+            break;
+        }
+      });
+
+      // Input validation
+      function validateInput(input, max) {
+        let value = parseInt(input.value) || 0;
+        if (value < 0) value = 0;
+        if (value > max) value = max;
+        input.value = value;
+      }
+
+      hoursInput.addEventListener("change", () =>
+        validateInput(hoursInput, 99)
+      );
+      minutesInput.addEventListener("change", () =>
+        validateInput(minutesInput, 59)
+      );
+      secondsInput.addEventListener("change", () =>
+        validateInput(secondsInput, 59)
+      );
+    </script>
+  </body>
+</html>

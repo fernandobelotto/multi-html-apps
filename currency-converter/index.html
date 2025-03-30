@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Currency Converter</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #f0f0f0;
+      }
+      .converter-container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .input-group {
+        margin-bottom: 20px;
+      }
+      select,
+      input {
+        width: 100%;
+        padding: 8px;
+        margin: 5px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      .result {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f9f9f9;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 18px;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        background: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background: #45a049;
+      }
+      h2 {
+        margin-top: 0;
+        color: #333;
+      }
+      .rate-info {
+        font-size: 12px;
+        color: #666;
+        text-align: center;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="converter-container">
+      <h2>Currency Converter</h2>
+      <div class="input-group">
+        <input
+          type="number"
+          id="amount"
+          placeholder="Enter amount"
+          step="0.01"
+        />
+      </div>
+      <div class="input-group">
+        <select id="fromCurrency">
+          <option value="USD">US Dollar (USD)</option>
+          <option value="EUR">Euro (EUR)</option>
+          <option value="GBP">British Pound (GBP)</option>
+          <option value="JPY">Japanese Yen (JPY)</option>
+          <option value="AUD">Australian Dollar (AUD)</option>
+          <option value="CAD">Canadian Dollar (CAD)</option>
+          <option value="CHF">Swiss Franc (CHF)</option>
+          <option value="CNY">Chinese Yuan (CNY)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <select id="toCurrency">
+          <option value="EUR">Euro (EUR)</option>
+          <option value="USD">US Dollar (USD)</option>
+          <option value="GBP">British Pound (GBP)</option>
+          <option value="JPY">Japanese Yen (JPY)</option>
+          <option value="AUD">Australian Dollar (AUD)</option>
+          <option value="CAD">Canadian Dollar (CAD)</option>
+          <option value="CHF">Swiss Franc (CHF)</option>
+          <option value="CNY">Chinese Yuan (CNY)</option>
+        </select>
+      </div>
+      <button onclick="convert()">Convert</button>
+      <div class="result" id="result">Enter an amount to convert</div>
+      <div class="rate-info">
+        *Using static exchange rates for demonstration
+      </div>
+    </div>
+
+    <script>
+      // Static exchange rates (base: USD)
+      const exchangeRates = {
+        USD: 1.0,
+        EUR: 0.85,
+        GBP: 0.73,
+        JPY: 110.0,
+        AUD: 1.35,
+        CAD: 1.25,
+        CHF: 0.92,
+        CNY: 6.45,
+      };
+
+      function convert() {
+        const amount = parseFloat(document.getElementById("amount").value);
+        const fromCurrency = document.getElementById("fromCurrency").value;
+        const toCurrency = document.getElementById("toCurrency").value;
+
+        if (isNaN(amount)) {
+          document.getElementById("result").textContent =
+            "Please enter a valid amount";
+          return;
+        }
+
+        // Convert to USD first (as base currency)
+        const amountInUSD = amount / exchangeRates[fromCurrency];
+
+        // Convert from USD to target currency
+        const convertedAmount = amountInUSD * exchangeRates[toCurrency];
+
+        // Format the result
+        const formattedResult = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: toCurrency,
+        }).format(convertedAmount);
+
+        document.getElementById(
+          "result"
+        ).textContent = `${amount} ${fromCurrency} = ${formattedResult}`;
+      }
+
+      // Allow conversion with Enter key
+      document
+        .getElementById("amount")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            convert();
+          }
+        });
+    </script>
+  </body>
+</html>

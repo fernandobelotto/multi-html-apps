@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BMI Calculator</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .bmi-card {
+        transition: transform 0.2s;
+        border-left: 4px solid #0d6efd;
+      }
+      .bmi-card:hover {
+        transform: translateY(-5px);
+      }
+      .result-container {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
+        border-radius: 50%;
+        background: #f8f9fa;
+        box-shadow: 0 0 20px rgba(13, 110, 253, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+      .bmi-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #0d6efd;
+        margin: 0;
+        line-height: 1;
+      }
+      .bmi-category {
+        font-size: 1.2rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+      }
+      .unit-toggle {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+      }
+      .history-card {
+        transition: transform 0.2s;
+        border-left: 4px solid #6f42c1;
+      }
+      .history-card:hover {
+        transform: translateY(-5px);
+      }
+      .chart-container {
+        height: 300px;
+        margin-bottom: 2rem;
+      }
+      .category-indicator {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+      }
+      .underweight {
+        background-color: #ffc107;
+      }
+      .normal {
+        background-color: #28a745;
+      }
+      .overweight {
+        background-color: #fd7e14;
+      }
+      .obese {
+        background-color: #dc3545;
+      }
+    </style>
+  </head>
+  <body class="bg-light">
+    <script src="../navbar.js"></script>
+    <div class="container py-5">
+      <h1 class="text-center mb-5">BMI Calculator</h1>
+
+      <!-- Unit Toggle -->
+      <div class="unit-toggle">
+        <div class="btn-group" role="group">
+          <input
+            type="radio"
+            class="btn-check"
+            name="unit"
+            id="metric"
+            checked
+          />
+          <label class="btn btn-outline-primary" for="metric">Metric</label>
+          <input type="radio" class="btn-check" name="unit" id="imperial" />
+          <label class="btn btn-outline-primary" for="imperial">Imperial</label>
+        </div>
+      </div>
+
+      <!-- Calculator Form -->
+      <div class="row mb-5">
+        <div class="col-md-6 offset-md-3">
+          <div class="card shadow-sm bmi-card">
+            <div class="card-body">
+              <form id="bmiForm">
+                <div class="metric-inputs">
+                  <div class="mb-3">
+                    <label class="form-label">Height (cm)</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="heightCm"
+                      min="1"
+                      step="0.1"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Weight (kg)</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="weightKg"
+                      min="1"
+                      step="0.1"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="imperial-inputs d-none">
+                  <div class="mb-3">
+                    <label class="form-label">Height (ft & in)</label>
+                    <div class="row">
+                      <div class="col">
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="heightFt"
+                          min="1"
+                          placeholder="feet"
+                        />
+                      </div>
+                      <div class="col">
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="heightIn"
+                          min="0"
+                          max="11"
+                          placeholder="inches"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Weight (lbs)</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="weightLbs"
+                      min="1"
+                      step="0.1"
+                    />
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                  Calculate BMI
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result Display -->
+      <div class="row mb-5 d-none" id="resultSection">
+        <div class="col-md-6 offset-md-3 text-center">
+          <div class="result-container mb-4">
+            <div class="bmi-value" id="bmiValue">0.0</div>
+            <div class="bmi-category" id="bmiCategory">-</div>
+          </div>
+          <div class="card shadow-sm mt-4">
+            <div class="card-body">
+              <h5 class="card-title">Healthy Weight Range</h5>
+              <p class="card-text" id="healthyRange">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BMI Chart -->
+      <div class="row mb-4">
+        <div class="col-md-8 offset-md-2">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">BMI History</h5>
+              <div class="chart-container">
+                <canvas id="bmiChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BMI Categories -->
+      <div class="row mb-4">
+        <div class="col-md-8 offset-md-2">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">BMI Categories</h5>
+              <div class="row mt-3">
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center mb-2">
+                    <div class="category-indicator underweight"></div>
+                    <span>Underweight: < 18.5</span>
+                  </div>
+                  <div class="d-flex align-items-center mb-2">
+                    <div class="category-indicator normal"></div>
+                    <span>Normal weight: 18.5 - 24.9</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center mb-2">
+                    <div class="category-indicator overweight"></div>
+                    <span>Overweight: 25 - 29.9</span>
+                  </div>
+                  <div class="d-flex align-items-center mb-2">
+                    <div class="category-indicator obese"></div>
+                    <span>Obese: ≥ 30</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="row mb-4">
+        <div class="col-md-8 offset-md-2">
+          <h5 class="mb-3">Recent Measurements</h5>
+          <div id="historyEntries">
+            <!-- History entries will be added here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css"
+    />
+    <script src="script.js"></script>
+  </body>
+</html>

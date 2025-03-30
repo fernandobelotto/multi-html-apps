@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tip Calculator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: #f0f0f0;
+      }
+      .calculator-container {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 300px;
+      }
+      .input-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+      }
+      input[type="number"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      .tip-buttons {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 10px 0;
+      }
+      .tip-btn {
+        padding: 8px;
+        border: 1px solid #4caf50;
+        background: white;
+        color: #4caf50;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .tip-btn:hover,
+      .tip-btn.active {
+        background: #4caf50;
+        color: white;
+      }
+      .result {
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 4px;
+        margin-top: 20px;
+      }
+      .result-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 5px 0;
+        font-size: 16px;
+      }
+      .result-row.total {
+        font-size: 20px;
+        font-weight: bold;
+        border-top: 2px solid #ddd;
+        margin-top: 10px;
+        padding-top: 10px;
+      }
+      .per-person {
+        font-size: 14px;
+        color: #666;
+        text-align: right;
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="calculator-container">
+      <h2>Tip Calculator</h2>
+      <div class="input-group">
+        <label for="bill">Bill Amount</label>
+        <input
+          type="number"
+          id="bill"
+          placeholder="Enter bill amount"
+          step="0.01"
+          min="0"
+        />
+      </div>
+      <div class="input-group">
+        <label>Tip Percentage</label>
+        <div class="tip-buttons">
+          <button class="tip-btn" onclick="selectTip(15)">15%</button>
+          <button class="tip-btn" onclick="selectTip(18)">18%</button>
+          <button class="tip-btn" onclick="selectTip(20)">20%</button>
+          <button class="tip-btn" onclick="selectTip(22)">22%</button>
+          <button class="tip-btn" onclick="selectTip(25)">25%</button>
+          <button class="tip-btn" onclick="showCustomTip()">Custom</button>
+        </div>
+        <input
+          type="number"
+          id="customTip"
+          placeholder="Custom tip %"
+          min="0"
+          max="100"
+          style="display: none"
+        />
+      </div>
+      <div class="input-group">
+        <label for="people">Number of People</label>
+        <input
+          type="number"
+          id="people"
+          placeholder="Number of people"
+          min="1"
+          value="1"
+        />
+      </div>
+      <div class="result">
+        <div class="result-row">
+          <span>Tip Amount:</span>
+          <span id="tipAmount">$0.00</span>
+        </div>
+        <div class="result-row total">
+          <span>Total Amount:</span>
+          <span id="totalAmount">$0.00</span>
+        </div>
+        <div class="per-person" id="perPerson"></div>
+      </div>
+    </div>
+
+    <script>
+      let selectedTip = 15; // Default tip percentage
+      const bill = document.getElementById("bill");
+      const customTip = document.getElementById("customTip");
+      const people = document.getElementById("people");
+      const tipAmount = document.getElementById("tipAmount");
+      const totalAmount = document.getElementById("totalAmount");
+      const perPerson = document.getElementById("perPerson");
+      const tipButtons = document.querySelectorAll(".tip-btn");
+
+      function selectTip(percentage) {
+        selectedTip = percentage;
+        customTip.style.display = "none";
+        customTip.value = "";
+
+        // Update button styles
+        tipButtons.forEach((btn) => {
+          btn.classList.remove("active");
+          if (btn.textContent === `${percentage}%`) {
+            btn.classList.add("active");
+          }
+        });
+
+        calculateTip();
+      }
+
+      function showCustomTip() {
+        customTip.style.display = "block";
+        customTip.value = selectedTip;
+        customTip.focus();
+
+        // Update button styles
+        tipButtons.forEach((btn) => btn.classList.remove("active"));
+        tipButtons[tipButtons.length - 1].classList.add("active");
+      }
+
+      function calculateTip() {
+        const billAmount = parseFloat(bill.value) || 0;
+        const tipPercentage =
+          customTip.style.display === "block"
+            ? parseFloat(customTip.value) || 0
+            : selectedTip;
+        const numberOfPeople = parseInt(people.value) || 1;
+
+        const tipValue = billAmount * (tipPercentage / 100);
+        const total = billAmount + tipValue;
+        const perPersonAmount = total / numberOfPeople;
+
+        tipAmount.textContent = formatCurrency(tipValue);
+        totalAmount.textContent = formatCurrency(total);
+
+        if (numberOfPeople > 1) {
+          perPerson.textContent = `Per person: ${formatCurrency(
+            perPersonAmount
+          )}`;
+        } else {
+          perPerson.textContent = "";
+        }
+      }
+
+      function formatCurrency(amount) {
+        return `$${amount.toFixed(2)}`;
+      }
+
+      // Event listeners
+      bill.addEventListener("input", calculateTip);
+      customTip.addEventListener("input", calculateTip);
+      people.addEventListener("input", calculateTip);
+
+      // Initialize with default values
+      selectTip(15);
+    </script>
+  </body>
+</html>

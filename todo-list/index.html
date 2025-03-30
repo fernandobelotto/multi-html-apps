@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minimalist Todo List</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 500px;
+        margin: 20px auto;
+        padding: 20px;
+      }
+      .todo-container {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .todo-input {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      #new-task {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      button {
+        padding: 8px 16px;
+        background: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #45a049;
+      }
+      .todo-list {
+        list-style: none;
+        padding: 0;
+      }
+      .todo-item {
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        background: white;
+        margin-bottom: 8px;
+        border-radius: 4px;
+        gap: 10px;
+      }
+      .todo-item.completed {
+        text-decoration: line-through;
+        opacity: 0.7;
+      }
+      .delete-btn {
+        background: #ff4444;
+        margin-left: auto;
+      }
+      .delete-btn:hover {
+        background: #cc0000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="todo-container">
+      <h1>Todo List</h1>
+      <div class="todo-input">
+        <input type="text" id="new-task" placeholder="Add a new task" />
+        <button onclick="addTask()">Add</button>
+      </div>
+      <ul class="todo-list" id="todo-list"></ul>
+    </div>
+
+    <script>
+      function addTask() {
+        const input = document.getElementById("new-task");
+        const task = input.value.trim();
+
+        if (task) {
+          const list = document.getElementById("todo-list");
+          const li = document.createElement("li");
+          li.className = "todo-item";
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.onclick = function () {
+            li.classList.toggle("completed");
+          };
+
+          const text = document.createElement("span");
+          text.textContent = task;
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.textContent = "Delete";
+          deleteBtn.className = "delete-btn";
+          deleteBtn.onclick = function () {
+            list.removeChild(li);
+          };
+
+          li.appendChild(checkbox);
+          li.appendChild(text);
+          li.appendChild(deleteBtn);
+          list.appendChild(li);
+
+          input.value = "";
+        }
+      }
+
+      // Allow adding tasks with Enter key
+      document
+        .getElementById("new-task")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            addTask();
+          }
+        });
+    </script>
+  </body>
+</html>

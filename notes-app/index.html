@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Note-Taking App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+      }
+      .notes-container {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 20px;
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .notes-list {
+        background: white;
+        padding: 10px;
+        border-radius: 4px;
+        max-height: 500px;
+        overflow-y: auto;
+      }
+      .note-item {
+        padding: 8px;
+        margin-bottom: 8px;
+        background: #f0f0f0;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .note-item:hover {
+        background: #e0e0e0;
+      }
+      .note-item.active {
+        background: #4caf50;
+        color: white;
+      }
+      .editor {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      #note-title {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+      #note-content {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        height: 400px;
+        resize: vertical;
+        font-size: 14px;
+      }
+      .button-group {
+        display: flex;
+        gap: 10px;
+      }
+      button {
+        padding: 8px 16px;
+        background: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #45a049;
+      }
+      button.delete {
+        background: #ff4444;
+      }
+      button.delete:hover {
+        background: #cc0000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="notes-container">
+      <div class="notes-list" id="notes-list">
+        <button onclick="createNewNote()">New Note</button>
+        <div id="notes-container"></div>
+      </div>
+      <div class="editor">
+        <input type="text" id="note-title" placeholder="Note Title" />
+        <textarea
+          id="note-content"
+          placeholder="Write your note here..."
+        ></textarea>
+        <div class="button-group">
+          <button onclick="saveNote()">Save</button>
+          <button class="delete" onclick="deleteNote()">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let notes = JSON.parse(localStorage.getItem("notes") || "[]");
+      let currentNoteId = null;
+
+      function renderNotes() {
+        const container = document.getElementById("notes-container");
+        container.innerHTML = "";
+
+        notes.forEach((note) => {
+          const div = document.createElement("div");
+          div.className = `note-item ${
+            note.id === currentNoteId ? "active" : ""
+          }`;
+          div.textContent = note.title || "Untitled Note";
+          div.onclick = () => loadNote(note.id);
+          container.appendChild(div);
+        });
+      }
+
+      function createNewNote() {
+        const note = {
+          id: Date.now(),
+          title: "",
+          content: "",
+        };
+        notes.push(note);
+        currentNoteId = note.id;
+        document.getElementById("note-title").value = "";
+        document.getElementById("note-content").value = "";
+        renderNotes();
+        saveToLocalStorage();
+      }
+
+      function loadNote(id) {
+        currentNoteId = id;
+        const note = notes.find((n) => n.id === id);
+        if (note) {
+          document.getElementById("note-title").value = note.title;
+          document.getElementById("note-content").value = note.content;
+        }
+        renderNotes();
+      }
+
+      function saveNote() {
+        if (currentNoteId === null) return;
+
+        const title = document.getElementById("note-title").value;
+        const content = document.getElementById("note-content").value;
+
+        const noteIndex = notes.findIndex((n) => n.id === currentNoteId);
+        if (noteIndex !== -1) {
+          notes[noteIndex].title = title;
+          notes[noteIndex].content = content;
+          renderNotes();
+          saveToLocalStorage();
+        }
+      }
+
+      function deleteNote() {
+        if (currentNoteId === null) return;
+
+        notes = notes.filter((n) => n.id !== currentNoteId);
+        currentNoteId = notes.length > 0 ? notes[0].id : null;
+
+        if (currentNoteId) {
+          loadNote(currentNoteId);
+        } else {
+          document.getElementById("note-title").value = "";
+          document.getElementById("note-content").value = "";
+        }
+
+        renderNotes();
+        saveToLocalStorage();
+      }
+
+      function saveToLocalStorage() {
+        localStorage.setItem("notes", JSON.stringify(notes));
+      }
+
+      // Initialize
+      if (notes.length > 0) {
+        loadNote(notes[0].id);
+      }
+      renderNotes();
+    </script>
+  </body>
+</html>
