@@ -72,7 +72,7 @@
 
 ✅ Podcast Player: Organize and play downloaded podcast episodes.
 
-📝 Online Radio Streamer: Stream a selection of pre-chosen radio stations.
+✅ Online Radio Streamer: Stream a selection of pre-chosen radio stations.
 
 📝 File Browser: A basic file management tool for navigating and opening files.
 
@@ -90,7 +90,6 @@
 
 📝 Video Player: Play video files with a straightforward interface.
 
-📝 Basic Video Editor: Trim or merge video clips with minimal editing features.
 
 📝 Audio Recorder: Record audio memos and save them for later playback.
 
@@ -106,13 +105,9 @@
 
 📝 Calorie Counter: Log daily meals and track approximate calorie intake.
 
-📝 Water Log: Allow users to record and visualize daily water consumption.
-
 📝 Menstrual Cycle Tracker: Track period dates and cycle information with simple graphs.
 
 📝 Mood Logger: Let users select or rate their mood each day for personal insights.
-
-📝 Gratitude Journal: A space to note down one or more things you're grateful for daily.
 
 📝 Ambient Sound Player: Play nature sounds or ambient noise for relaxation.
 
@@ -124,7 +119,7 @@
 
 📝 Random Number Generator: Generate random numbers within a user-defined range.
 
-📝 Dice Roller: Simulate dice rolls for board games and other decision-making.
+✅ Dice Roller: Simulate dice rolls for board games and other decision-making.
 
 📝 Coin Flipper: Virtually flip a coin for simple decision-making.
 
@@ -142,7 +137,7 @@
 
 📝 Local Events List: Display upcoming local events using a static list or public data source.
 
-📝 Holiday Calendar: Show public holidays for a selected country or region.
+✅ Holiday Calendar: Show public holidays for a selected country or region.
 
 📝 Time Zone Converter: Convert time from one zone to another with a simple interface.
 
@@ -152,11 +147,11 @@
 
 📝 Parking Spot Locator: Let users mark and remember where they parked.
 
-📝 Household Chore Manager: Organize and assign household chores with checklists.
+✅ Household Chore Manager: Organize and assign household chores with checklists.
 
 📝 Cleaning Schedule: Create recurring cleaning schedules with reminders.
 
-📝 Gardening Planner: Log watering, fertilizing, and pruning schedules for plants.
+✅ Gardening Planner: Log watering, fertilizing, and pruning schedules for plants.
 
 📝 Pet Care Scheduler: Remind users of pet feeding times and walks.
 
@@ -174,13 +169,7 @@
 
 📝 Event Countdown: Count down to important dates like birthdays or anniversaries.
 
-📝 Personal Diary: A secure, private journal that can be locked with a passcode.
-
-📝 Expense Splitter: Calculate and split expenses among friends or roommates.
-
 📝 Survey Creator: Build and complete simple surveys with multiple-choice questions.
-
-📝 Strobe Light App: Use the device's flashlight in strobe mode for visual effects.
 
 📝 Digital Ruler: Use on-screen measurements for rough size estimates (based on screen dimensions).
 

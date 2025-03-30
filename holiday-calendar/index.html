@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Holiday Calendar</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Holiday Calendar</h1>
+      <div class="search-section">
+        <div class="country-selector">
+          <label for="countrySelect">Select Country:</label>
+          <select id="countrySelect">
+            <option value="">Choose a country...</option>
+          </select>
+        </div>
+        <div class="year-selector">
+          <label for="yearSelect">Select Year:</label>
+          <select id="yearSelect"></select>
+        </div>
+      </div>
+
+      <div class="calendar-container">
+        <div id="loading" class="loading hidden">
+          <div class="spinner"></div>
+          <p>Loading holidays...</p>
+        </div>
+
+        <div id="holidayList" class="holiday-list">
+          <!-- Holidays will be inserted here -->
+        </div>
+
+        <div id="noHolidays" class="no-holidays hidden">
+          <p>No holidays found for the selected country and year.</p>
+        </div>
+
+        <div id="error" class="error hidden">
+          <p>Error loading holidays. Please try again later.</p>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

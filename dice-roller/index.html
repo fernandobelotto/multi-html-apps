@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dice Roller</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Dice Roller</h1>
+      <div class="dice-container">
+        <div class="dice" id="dice">⚄</div>
+      </div>
+      <div class="controls">
+        <div class="dice-selector">
+          <label for="diceType">Select Dice:</label>
+          <select id="diceType">
+            <option value="4">D4</option>
+            <option value="6" selected>D6</option>
+            <option value="8">D8</option>
+            <option value="10">D10</option>
+            <option value="12">D12</option>
+            <option value="20">D20</option>
+            <option value="100">D100</option>
+          </select>
+        </div>
+        <div class="quantity-selector">
+          <label for="diceCount">Number of Dice:</label>
+          <input type="number" id="diceCount" min="1" max="10" value="1" />
+        </div>
+        <button id="rollButton" class="roll-button">Roll Dice!</button>
+      </div>
+      <div class="results">
+        <h2>Results</h2>
+        <div id="rollResults" class="roll-results"></div>
+        <div class="total-container">
+          <span>Total:</span>
+          <span id="totalResult">0</span>
+        </div>
+      </div>
+      <div class="history">
+        <h2>Roll History</h2>
+        <div id="rollHistory" class="roll-history"></div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

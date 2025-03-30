@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gardening Planner</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1><i class="fas fa-leaf"></i> Gardening Planner</h1>
+
+      <div class="add-plant-section">
+        <h2>Add New Plant</h2>
+        <form id="addPlantForm">
+          <div class="form-group">
+            <label for="plantName">Plant Name:</label>
+            <input
+              type="text"
+              id="plantName"
+              required
+              placeholder="e.g., Snake Plant"
+            />
+          </div>
+          <div class="form-group">
+            <label for="plantType">Plant Type:</label>
+            <select id="plantType" required>
+              <option value="">Select type...</option>
+              <option value="Indoor">Indoor</option>
+              <option value="Outdoor">Outdoor</option>
+              <option value="Herb">Herb</option>
+              <option value="Vegetable">Vegetable</option>
+              <option value="Succulent">Succulent</option>
+            </select>
+          </div>
+          <div class="schedule-group">
+            <div class="form-group">
+              <label for="wateringSchedule">Watering Schedule:</label>
+              <select id="wateringSchedule" required>
+                <option value="daily">Daily</option>
+                <option value="2days">Every 2 days</option>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Bi-weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="fertilizingSchedule">Fertilizing Schedule:</label>
+              <select id="fertilizingSchedule" required>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Bi-weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Quarterly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="pruningSchedule">Pruning Schedule:</label>
+              <select id="pruningSchedule" required>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Bi-weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Quarterly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="notes">Notes:</label>
+            <textarea
+              id="notes"
+              placeholder="Add any special care instructions..."
+            ></textarea>
+          </div>
+          <button type="submit" class="btn-add">Add Plant</button>
+        </form>
+      </div>
+
+      <div class="plants-section">
+        <h2>My Plants</h2>
+        <div class="filters">
+          <select id="filterType">
+            <option value="all">All Types</option>
+            <option value="Indoor">Indoor</option>
+            <option value="Outdoor">Outdoor</option>
+            <option value="Herb">Herb</option>
+            <option value="Vegetable">Vegetable</option>
+            <option value="Succulent">Succulent</option>
+          </select>
+          <div class="search-box">
+            <input
+              type="text"
+              id="searchPlant"
+              placeholder="Search plants..."
+            />
+            <i class="fas fa-search"></i>
+          </div>
+        </div>
+        <div id="plantsList" class="plants-list">
+          <!-- Plants will be added here dynamically -->
+        </div>
+      </div>
+
+      <div class="tasks-section">
+        <h2>Upcoming Tasks</h2>
+        <div id="upcomingTasks" class="tasks-list">
+          <!-- Tasks will be added here dynamically -->
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
