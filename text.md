@@ -62,7 +62,7 @@
 
 ✅ Chess Game: A simple chess game for two players on a minimal board.
 
-📝 Checkers Game: Play the classic game of checkers with basic rules.
+✅ Checkers Game: Play the classic game of checkers with basic rules.
 
 📝 Drawing Canvas: A blank canvas for freehand drawing or sketching.
 
