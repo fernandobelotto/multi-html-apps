@@ -56,7 +56,7 @@
 
 ✅ Sudoku Game: Offer basic sudoku puzzles with multiple difficulty levels.
 
-📝 Minesweeper: Recreate the classic minesweeper puzzle game.
+✅ Minesweeper: Recreate the classic minesweeper puzzle game.
 
 📝 Hangman Game: A word-guessing game where users try to reveal the hidden word.
 
