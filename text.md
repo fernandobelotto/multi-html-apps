@@ -60,7 +60,7 @@
 
 ✅ Hangman: Create a word-guessing game with multiple categories.
 
-📝 Chess Game: A simple chess game for two players on a minimal board.
+✅ Chess Game: A simple chess game for two players on a minimal board.
 
 📝 Checkers Game: Play the classic game of checkers with basic rules.
 
