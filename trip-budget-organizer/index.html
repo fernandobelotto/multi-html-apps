@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trip Budget Organizer</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        background-color: #f8f9fa;
+        color: #343a40;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      h1 {
+        color: #2d3748;
+        margin-bottom: 10px;
+      }
+
+      .trip-form {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #4a5568;
+        font-weight: 500;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .budget-card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .budget-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .budget-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2d3748;
+      }
+
+      .budget-amount {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #2b6cb0;
+      }
+
+      .expense-list {
+        margin-top: 15px;
+      }
+
+      .expense-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .expense-item:last-child {
+        border-bottom: none;
+      }
+
+      .expense-details {
+        flex-grow: 1;
+      }
+
+      .expense-category {
+        font-weight: 500;
+        color: #4a5568;
+      }
+
+      .expense-date {
+        font-size: 0.9rem;
+        color: #718096;
+      }
+
+      .expense-amount {
+        font-weight: 500;
+        color: #2d3748;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-primary {
+        background-color: #2b6cb0;
+        color: white;
+      }
+
+      .btn-danger {
+        background-color: #e53e3e;
+        color: white;
+      }
+
+      .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+
+      .summary-card {
+        background: #2b6cb0;
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+      }
+
+      .summary-item {
+        text-align: center;
+      }
+
+      .summary-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        margin-bottom: 5px;
+      }
+
+      .summary-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        margin-top: 15px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
+
+      .category-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .category-item {
+        background: #f7fafc;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .category-icon {
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+      }
+
+      .category-name {
+        font-weight: 500;
+        color: #4a5568;
+      }
+
+      .category-budget {
+        color: #718096;
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 768px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .summary-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Trip Budget Organizer</h1>
+      </header>
+
+      <div class="summary-card">
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="summary-label">Total Budget</div>
+            <div class="summary-value" id="totalBudget">$0</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Spent</div>
+            <div class="summary-value" id="totalSpent">$0</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Remaining</div>
+            <div class="summary-value" id="remaining">$0</div>
+          </div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="trip-form">
+        <div class="form-group">
+          <label for="tripName">Trip Name</label>
+          <input type="text" id="tripName" placeholder="Enter trip name" />
+        </div>
+        <div class="grid">
+          <div class="form-group">
+            <label for="startDate">Start Date</label>
+            <input type="date" id="startDate" />
+          </div>
+          <div class="form-group">
+            <label for="endDate">End Date</label>
+            <input type="date" id="endDate" />
+          </div>
+          <div class="form-group">
+            <label for="totalBudgetInput">Total Budget</label>
+            <input
+              type="number"
+              id="totalBudgetInput"
+              placeholder="Enter total budget"
+            />
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveTripDetails()">
+          Save Trip Details
+        </button>
+      </div>
+
+      <div class="grid">
+        <div class="budget-card">
+          <div class="budget-header">
+            <div class="budget-title">Add Expense</div>
+          </div>
+          <div class="form-group">
+            <label for="expenseCategory">Category</label>
+            <select id="expenseCategory">
+              <option value="accommodation">🏨 Accommodation</option>
+              <option value="transportation">🚗 Transportation</option>
+              <option value="food">🍽️ Food & Dining</option>
+              <option value="activities">🎯 Activities</option>
+              <option value="shopping">🛍️ Shopping</option>
+              <option value="other">📌 Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="expenseAmount">Amount</label>
+            <input
+              type="number"
+              id="expenseAmount"
+              placeholder="Enter amount"
+            />
+          </div>
+          <div class="form-group">
+            <label for="expenseDate">Date</label>
+            <input type="date" id="expenseDate" />
+          </div>
+          <div class="form-group">
+            <label for="expenseNote">Note</label>
+            <input
+              type="text"
+              id="expenseNote"
+              placeholder="Add a note (optional)"
+            />
+          </div>
+          <button class="btn btn-primary" onclick="addExpense()">
+            Add Expense
+          </button>
+        </div>
+
+        <div class="budget-card">
+          <div class="budget-header">
+            <div class="budget-title">Recent Expenses</div>
+          </div>
+          <div class="expense-list" id="expenseList">
+            <!-- Expenses will be added here dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div class="budget-card">
+        <div class="budget-header">
+          <div class="budget-title">Category Breakdown</div>
+        </div>
+        <div class="category-list" id="categoryList">
+          <!-- Categories will be added here dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Initialize trip data structure
+      let tripData = {
+        name: "",
+        startDate: "",
+        endDate: "",
+        totalBudget: 0,
+        expenses: [],
+        categories: {
+          accommodation: { icon: "🏨", spent: 0 },
+          transportation: { icon: "🚗", spent: 0 },
+          food: { icon: "🍽️", spent: 0 },
+          activities: { icon: "🎯", spent: 0 },
+          shopping: { icon: "🛍️", spent: 0 },
+          other: { icon: "📌", spent: 0 },
+        },
+      };
+
+      // Load data from localStorage
+      function loadTripData() {
+        const savedData = localStorage.getItem("tripData");
+        if (savedData) {
+          tripData = JSON.parse(savedData);
+          updateUI();
+        }
+      }
+
+      // Save trip details
+      function saveTripDetails() {
+        tripData.name = document.getElementById("tripName").value;
+        tripData.startDate = document.getElementById("startDate").value;
+        tripData.endDate = document.getElementById("endDate").value;
+        tripData.totalBudget =
+          parseFloat(document.getElementById("totalBudgetInput").value) || 0;
+
+        localStorage.setItem("tripData", JSON.stringify(tripData));
+        updateUI();
+      }
+
+      // Add new expense
+      function addExpense() {
+        const category = document.getElementById("expenseCategory").value;
+        const amount = parseFloat(
+          document.getElementById("expenseAmount").value
+        );
+        const date = document.getElementById("expenseDate").value;
+        const note = document.getElementById("expenseNote").value;
+
+        if (!amount || !date) {
+          alert("Please enter amount and date");
+          return;
+        }
+
+        const expense = {
+          category,
+          amount,
+          date,
+          note,
+          id: Date.now(),
+        };
+
+        tripData.expenses.push(expense);
+        tripData.categories[category].spent += amount;
+
+        localStorage.setItem("tripData", JSON.stringify(tripData));
+        updateUI();
+
+        // Clear form
+        document.getElementById("expenseAmount").value = "";
+        document.getElementById("expenseNote").value = "";
+      }
+
+      // Delete expense
+      function deleteExpense(id) {
+        const expense = tripData.expenses.find((e) => e.id === id);
+        tripData.categories[expense.category].spent -= expense.amount;
+        tripData.expenses = tripData.expenses.filter((e) => e.id !== id);
+
+        localStorage.setItem("tripData", JSON.stringify(tripData));
+        updateUI();
+      }
+
+      // Update UI elements
+      function updateUI() {
+        // Update summary
+        const totalSpent = tripData.expenses.reduce(
+          (sum, exp) => sum + exp.amount,
+          0
+        );
+        const remaining = tripData.totalBudget - totalSpent;
+        const spentPercentage = (totalSpent / tripData.totalBudget) * 100;
+
+        document.getElementById("totalBudget").textContent = formatCurrency(
+          tripData.totalBudget
+        );
+        document.getElementById("totalSpent").textContent =
+          formatCurrency(totalSpent);
+        document.getElementById("remaining").textContent =
+          formatCurrency(remaining);
+        document.getElementById("progressBar").style.width = `${Math.min(
+          spentPercentage,
+          100
+        )}%`;
+
+        // Update expense list
+        const expenseList = document.getElementById("expenseList");
+        expenseList.innerHTML = tripData.expenses
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .slice(0, 5)
+          .map(
+            (expense) => `
+                    <div class="expense-item">
+                        <div class="expense-details">
+                            <div class="expense-category">
+                                ${tripData.categories[expense.category].icon} ${
+              expense.category
+            }
+                            </div>
+                            <div class="expense-date">${formatDate(
+                              expense.date
+                            )}</div>
+                            ${
+                              expense.note
+                                ? `<div class="expense-note">${expense.note}</div>`
+                                : ""
+                            }
+                        </div>
+                        <div class="expense-amount">${formatCurrency(
+                          expense.amount
+                        )}</div>
+                        <button class="btn btn-danger" onclick="deleteExpense(${
+                          expense.id
+                        })">×</button>
+                    </div>
+                `
+          )
+          .join("");
+
+        // Update category breakdown
+        const categoryList = document.getElementById("categoryList");
+        categoryList.innerHTML = Object.entries(tripData.categories)
+          .map(
+            ([category, data]) => `
+                    <div class="category-item">
+                        <div class="category-icon">${data.icon}</div>
+                        <div class="category-name">${category}</div>
+                        <div class="category-budget">${formatCurrency(
+                          data.spent
+                        )}</div>
+                    </div>
+                `
+          )
+          .join("");
+
+        // Update form fields if empty
+        if (!document.getElementById("tripName").value) {
+          document.getElementById("tripName").value = tripData.name;
+          document.getElementById("startDate").value = tripData.startDate;
+          document.getElementById("endDate").value = tripData.endDate;
+          document.getElementById("totalBudgetInput").value =
+            tripData.totalBudget;
+        }
+      }
+
+      // Helper function to format currency
+      function formatCurrency(amount) {
+        return new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(amount);
+      }
+
+      // Helper function to format date
+      function formatDate(dateString) {
+        return new Date(dateString).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+      }
+
+      // Load data on page load
+      loadTripData();
+    </script>
+  </body>
+</html>

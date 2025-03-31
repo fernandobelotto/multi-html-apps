@@ -114,16 +114,16 @@
 
 1. ✅ Word of the Day: Teach users a new word every day with its definition and usage.
 
-1. 📝 Trip Budget Organizer: Plan travel expenses with a simple budgeting interface.
+1. ✅ Trip Budget Organizer: Plan travel expenses with a simple budgeting interface.
 
-1. 📝 Simple Map Viewer: Display maps using embedded maps or static images.
+✅ Simple Map Viewer: Display maps using embedded maps or static images.
 
-1. 📝 Book Tracker: Log books you've read, are reading, or want to read.
+✅ Book Tracker: Log books you've read, are reading, or want to read.
 
-1. 📝 Digital Ruler: Use on-screen measurements for rough size estimates (based on screen dimensions).
+📝 Digital Ruler: Use on-screen measurements for rough size estimates (based on screen dimensions).
 
-1. 📝 Color Picker Tool: Select, display, and save colors chosen from a palette or image.
+📝 Color Picker Tool: Select, display, and save colors chosen from a palette or image.
 
-1. 📝 Periodic Table Guide: Provide a reference for chemical elements with basic facts.
+📝 Periodic Table Guide: Provide a reference for chemical elements with basic facts.
 
-1. 📝 Running Pace Calculator: Input distance and time to calculate your running pace.
+📝 Running Pace Calculator: Input distance and time to calculate your running pace.
