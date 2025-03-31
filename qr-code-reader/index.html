@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Code Reader</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #f5f5f5;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        padding: 20px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .camera-container {
+        position: relative;
+        max-width: 640px;
+        margin: 0 auto;
+        overflow: hidden;
+        border-radius: 8px;
+        background-color: #000;
+      }
+
+      #video {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      #canvas {
+        display: none;
+      }
+
+      .scanning-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 2px solid #4caf50;
+        border-radius: 8px;
+        pointer-events: none;
+      }
+
+      .scanning-line {
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        background-color: #4caf50;
+        animation: scan 2s linear infinite;
+      }
+
+      @keyframes scan {
+        0% {
+          top: 0;
+        }
+        50% {
+          top: 100%;
+        }
+        100% {
+          top: 0;
+        }
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 20px 0;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.2s;
+      }
+
+      .btn-primary {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      .btn:hover {
+        opacity: 0.9;
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .result {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 4px;
+        background-color: #f8f9fa;
+        display: none;
+      }
+
+      .result.active {
+        display: block;
+      }
+
+      .result h3 {
+        margin-bottom: 10px;
+        color: #4caf50;
+      }
+
+      .result p {
+        word-break: break-all;
+      }
+
+      .history {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 4px;
+        background-color: #f8f9fa;
+      }
+
+      .history h3 {
+        margin-bottom: 10px;
+        color: #4caf50;
+      }
+
+      .history-list {
+        list-style: none;
+      }
+
+      .history-item {
+        padding: 10px;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .history-item:last-child {
+        border-bottom: none;
+      }
+
+      .status-message {
+        text-align: center;
+        margin: 10px 0;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>QR Code Reader</h1>
+        <p>Point your camera at a QR code to scan</p>
+      </div>
+
+      <div class="camera-container">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
+        <div class="scanning-overlay">
+          <div class="scanning-line"></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="startCamera" class="btn btn-primary">Start Camera</button>
+        <button id="stopCamera" class="btn btn-primary" style="display: none">
+          Stop Camera
+        </button>
+      </div>
+
+      <div class="status-message" id="statusMessage"></div>
+
+      <div class="result" id="result">
+        <h3>Scanned Result</h3>
+        <p id="resultText"></p>
+      </div>
+
+      <div class="history">
+        <h3>Scan History</h3>
+        <ul class="history-list" id="historyList"></ul>
+      </div>
+    </div>
+
+    <script>
+      const video = document.getElementById("video");
+      const canvas = document.getElementById("canvas");
+      const startButton = document.getElementById("startCamera");
+      const stopButton = document.getElementById("stopCamera");
+      const statusMessage = document.getElementById("statusMessage");
+      const result = document.getElementById("result");
+      const resultText = document.getElementById("resultText");
+      const historyList = document.getElementById("historyList");
+
+      let stream = null;
+      let isScanning = false;
+      let scanHistory = [];
+
+      // Start camera and QR scanning
+      startButton.addEventListener("click", async () => {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: "environment",
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+            },
+          });
+          video.srcObject = stream;
+          startButton.style.display = "none";
+          stopButton.style.display = "inline-block";
+          isScanning = true;
+          statusMessage.textContent =
+            "Camera started. Point at a QR code to scan.";
+          scanQRCode();
+        } catch (err) {
+          statusMessage.textContent = "Error accessing camera: " + err.message;
+        }
+      });
+
+      // Stop camera
+      stopButton.addEventListener("click", () => {
+        if (stream) {
+          stream.getTracks().forEach((track) => track.stop());
+          video.srcObject = null;
+          stream = null;
+        }
+        isScanning = false;
+        startButton.style.display = "inline-block";
+        stopButton.style.display = "none";
+        statusMessage.textContent = "Camera stopped.";
+      });
+
+      // Scan for QR codes
+      function scanQRCode() {
+        if (!isScanning) return;
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas
+          .getContext("2d")
+          .drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = canvas
+          .getContext("2d")
+          .getImageData(0, 0, canvas.width, canvas.height);
+
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "dontInvert",
+        });
+
+        if (code) {
+          // Check if this code was recently scanned
+          const lastScan = scanHistory[0];
+          if (!lastScan || lastScan.text !== code.text) {
+            handleSuccessfulScan(code.text);
+          }
+        }
+
+        requestAnimationFrame(scanQRCode);
+      }
+
+      // Handle successful QR code scan
+      function handleSuccessfulScan(text) {
+        // Add to history
+        scanHistory.unshift({
+          text: text,
+          timestamp: new Date(),
+        });
+
+        // Keep only last 10 scans
+        if (scanHistory.length > 10) {
+          scanHistory.pop();
+        }
+
+        // Update UI
+        result.classList.add("active");
+        resultText.textContent = text;
+        updateHistory();
+
+        // Play success sound
+        const audio = new Audio(
+          "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAUAAAiSAAYGBgYJCQkJCQwMDAwMDw8PDw8SUlJSUlVVVVVVWFhYWFhbW1tbW15eXl5eYaGhoaGkpKSkpKenp6enqqqqqqqtra2trbDw8PDw8/Pz8/P29vb29vn5+fn5/Pz8/Pz//////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAAAAAAAAAAAIkjG8J+JAAAAAAAAAAAAAAAAAAAA//MUZAAAAAGkAAAAAAAAA0gAAAAATEFN//MUZAMAAAGkAAAAAAAAA0gAAAAARTMu//MUZAYAAAGkAAAAAAAAA0gAAAAAOTku//MUZAkAAAGkAAAAAAAAA0gAAAAANVVV"
+        );
+        audio.play();
+      }
+
+      // Update scan history display
+      function updateHistory() {
+        historyList.innerHTML = scanHistory
+          .map(
+            (scan) => `
+                <li class="history-item">
+                    <strong>${new Date(
+                      scan.timestamp
+                    ).toLocaleTimeString()}</strong>: 
+                    ${scan.text}
+                </li>
+            `
+          )
+          .join("");
+      }
+
+      // Handle visibility change
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          if (stream) {
+            stopButton.click();
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

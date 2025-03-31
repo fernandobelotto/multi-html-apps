@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mood Logger</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        background-color: #f5f7fa;
+        color: #2d3748;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .header {
+        background-color: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        color: #4a5568;
+        margin-bottom: 10px;
+        font-size: 2em;
+      }
+
+      .mood-input {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .mood-selector {
+        display: flex;
+        gap: 15px;
+        margin: 20px 0;
+        flex-wrap: wrap;
+      }
+
+      .mood-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+      }
+
+      .mood-button:hover {
+        transform: translateY(-2px);
+        border-color: #4299e1;
+      }
+
+      .mood-button.selected {
+        border-color: #4299e1;
+        background-color: #ebf8ff;
+      }
+
+      .mood-emoji {
+        font-size: 2em;
+        margin-bottom: 5px;
+      }
+
+      .mood-label {
+        font-size: 0.9em;
+        color: #4a5568;
+      }
+
+      .notes-input {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        margin: 10px 0;
+        font-family: inherit;
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .save-button {
+        background-color: #4299e1;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.3s ease;
+      }
+
+      .save-button:hover {
+        background-color: #3182ce;
+      }
+
+      .mood-history {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .mood-entries {
+        display: grid;
+        gap: 15px;
+      }
+
+      .mood-entry {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background-color: #f8fafc;
+      }
+
+      .entry-emoji {
+        font-size: 1.5em;
+        margin-right: 15px;
+      }
+
+      .entry-details {
+        flex-grow: 1;
+      }
+
+      .entry-date {
+        font-size: 0.9em;
+        color: #718096;
+      }
+
+      .entry-notes {
+        margin-top: 5px;
+        color: #4a5568;
+      }
+
+      .insights {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #ebf8ff;
+        border-radius: 8px;
+      }
+
+      .chart-container {
+        margin-top: 20px;
+        height: 200px;
+        position: relative;
+      }
+
+      @media (max-width: 600px) {
+        .mood-selector {
+          justify-content: center;
+        }
+
+        .mood-button {
+          flex: 1 1 calc(33.333% - 15px);
+          min-width: 80px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Mood Logger</h1>
+        <p>Track your daily mood and gain personal insights</p>
+      </div>
+
+      <div class="mood-input">
+        <h2>How are you feeling today?</h2>
+        <div class="mood-selector">
+          <button class="mood-button" data-mood="amazing">
+            <span class="mood-emoji">😄</span>
+            <span class="mood-label">Amazing</span>
+          </button>
+          <button class="mood-button" data-mood="good">
+            <span class="mood-emoji">🙂</span>
+            <span class="mood-label">Good</span>
+          </button>
+          <button class="mood-button" data-mood="okay">
+            <span class="mood-emoji">😐</span>
+            <span class="mood-label">Okay</span>
+          </button>
+          <button class="mood-button" data-mood="bad">
+            <span class="mood-emoji">😕</span>
+            <span class="mood-label">Bad</span>
+          </button>
+          <button class="mood-button" data-mood="terrible">
+            <span class="mood-emoji">😢</span>
+            <span class="mood-label">Terrible</span>
+          </button>
+        </div>
+        <textarea
+          class="notes-input"
+          placeholder="Add notes about your day (optional)..."
+        ></textarea>
+        <button class="save-button">Save Mood</button>
+      </div>
+
+      <div class="mood-history">
+        <div class="history-header">
+          <h2>Your Mood History</h2>
+        </div>
+        <div class="mood-entries" id="moodEntries">
+          <!-- Mood entries will be dynamically added here -->
+        </div>
+        <div class="insights">
+          <h3>Insights</h3>
+          <div id="moodStats"></div>
+          <div class="chart-container" id="moodChart"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Initialize IndexedDB
+      let db;
+      const DB_NAME = "MoodLoggerDB";
+      const STORE_NAME = "moods";
+
+      const request = indexedDB.open(DB_NAME, 1);
+
+      request.onerror = (event) => {
+        console.error("Database error:", event.target.error);
+      };
+
+      request.onupgradeneeded = (event) => {
+        db = event.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          const store = db.createObjectStore(STORE_NAME, {
+            keyPath: "id",
+            autoIncrement: true,
+          });
+          store.createIndex("date", "date", { unique: false });
+        }
+      };
+
+      request.onsuccess = (event) => {
+        db = event.target.result;
+        loadMoodEntries();
+      };
+
+      // DOM Elements
+      const moodButtons = document.querySelectorAll(".mood-button");
+      const notesInput = document.querySelector(".notes-input");
+      const saveButton = document.querySelector(".save-button");
+      const moodEntries = document.getElementById("moodEntries");
+      const moodStats = document.getElementById("moodStats");
+
+      let selectedMood = null;
+
+      // Event Listeners
+      moodButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          moodButtons.forEach((btn) => btn.classList.remove("selected"));
+          button.classList.add("selected");
+          selectedMood = button.dataset.mood;
+        });
+      });
+
+      saveButton.addEventListener("click", saveMoodEntry);
+
+      // Save mood entry
+      function saveMoodEntry() {
+        if (!selectedMood) {
+          alert("Please select a mood");
+          return;
+        }
+
+        const entry = {
+          mood: selectedMood,
+          notes: notesInput.value.trim(),
+          date: new Date().toISOString(),
+        };
+
+        const transaction = db.transaction([STORE_NAME], "readwrite");
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.add(entry);
+
+        request.onsuccess = () => {
+          notesInput.value = "";
+          moodButtons.forEach((btn) => btn.classList.remove("selected"));
+          selectedMood = null;
+          loadMoodEntries();
+        };
+
+        request.onerror = () => {
+          console.error("Error saving mood entry:", request.error);
+        };
+      }
+
+      // Load mood entries
+      function loadMoodEntries() {
+        const transaction = db.transaction([STORE_NAME], "readonly");
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.getAll();
+
+        request.onsuccess = () => {
+          const entries = request.result.sort(
+            (a, b) => new Date(b.date) - new Date(a.date)
+          );
+          displayMoodEntries(entries);
+          updateInsights(entries);
+        };
+      }
+
+      // Display mood entries
+      function displayMoodEntries(entries) {
+        moodEntries.innerHTML = entries
+          .map(
+            (entry) => `
+                <div class="mood-entry">
+                    <span class="entry-emoji">${getMoodEmoji(entry.mood)}</span>
+                    <div class="entry-details">
+                        <div class="entry-date">${formatDate(entry.date)}</div>
+                        ${
+                          entry.notes
+                            ? `<div class="entry-notes">${entry.notes}</div>`
+                            : ""
+                        }
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      // Update insights
+      function updateInsights(entries) {
+        if (entries.length === 0) {
+          moodStats.innerHTML =
+            "<p>No mood entries yet. Start logging your moods!</p>";
+          return;
+        }
+
+        const moodCounts = entries.reduce((acc, entry) => {
+          acc[entry.mood] = (acc[entry.mood] || 0) + 1;
+          return acc;
+        }, {});
+
+        const totalEntries = entries.length;
+        const mostCommonMood = Object.entries(moodCounts).sort(
+          (a, b) => b[1] - a[1]
+        )[0];
+
+        moodStats.innerHTML = `
+                <p>Total entries: ${totalEntries}</p>
+                <p>Most common mood: ${mostCommonMood[0]} (${getMoodEmoji(
+          mostCommonMood[0]
+        )}) - 
+                   ${Math.round(
+                     (mostCommonMood[1] / totalEntries) * 100
+                   )}% of the time</p>
+            `;
+      }
+
+      // Helper functions
+      function getMoodEmoji(mood) {
+        const emojis = {
+          amazing: "😄",
+          good: "🙂",
+          okay: "😐",
+          bad: "😕",
+          terrible: "😢",
+        };
+        return emojis[mood] || "😐";
+      }
+
+      function formatDate(dateString) {
+        const options = {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+      }
+    </script>
+  </body>
+</html>

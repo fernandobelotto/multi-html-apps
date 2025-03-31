@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fitness Log</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        line-height: 1.6;
+        background-color: #f4f4f4;
+        color: #333;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        text-align: center;
+        color: #2196f3;
+        margin-bottom: 30px;
+      }
+
+      .workout-form {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+
+      textarea {
+        height: 100px;
+        resize: vertical;
+      }
+
+      .btn {
+        background: #2196f3;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background 0.3s;
+      }
+
+      .btn:hover {
+        background: #1976d2;
+      }
+
+      .btn-export {
+        background: #4caf50;
+        margin-left: 10px;
+      }
+
+      .btn-export:hover {
+        background: #388e3c;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 2em;
+        font-weight: bold;
+        color: #2196f3;
+        margin: 10px 0;
+      }
+
+      .workout-list {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .workout-item {
+        border-bottom: 1px solid #eee;
+        padding: 15px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        gap: 15px;
+        align-items: center;
+      }
+
+      .workout-item:last-child {
+        border-bottom: none;
+      }
+
+      .workout-date {
+        color: #666;
+        font-size: 0.9em;
+      }
+
+      .workout-type {
+        font-weight: bold;
+        color: #2196f3;
+      }
+
+      .workout-duration {
+        color: #666;
+      }
+
+      .workout-notes {
+        grid-column: 1 / -1;
+        color: #666;
+        font-size: 0.9em;
+        padding: 10px;
+        background: #f9f9f9;
+        border-radius: 4px;
+        margin-top: 5px;
+      }
+
+      .delete-btn {
+        background: #f44336;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9em;
+      }
+
+      .delete-btn:hover {
+        background: #d32f2f;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+      }
+
+      @media (max-width: 768px) {
+        .workout-item {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .workout-notes {
+          grid-column: 1 / -1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Fitness Log</h1>
+
+      <div class="workout-form">
+        <div class="form-group">
+          <label for="workoutType">Workout Type</label>
+          <select id="workoutType">
+            <option value="running">Running</option>
+            <option value="cycling">Cycling</option>
+            <option value="swimming">Swimming</option>
+            <option value="weightlifting">Weight Lifting</option>
+            <option value="yoga">Yoga</option>
+            <option value="hiit">HIIT</option>
+            <option value="walking">Walking</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="duration">Duration (minutes)</label>
+          <input type="number" id="duration" min="1" value="30" />
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Notes</label>
+          <textarea
+            id="notes"
+            placeholder="Add details about your workout..."
+          ></textarea>
+        </div>
+
+        <button class="btn" onclick="addWorkout()">Log Workout</button>
+        <button class="btn btn-export" onclick="exportWorkouts()">
+          Export Data
+        </button>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <h3>Total Workouts</h3>
+          <div class="stat-value" id="totalWorkouts">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Total Minutes</h3>
+          <div class="stat-value" id="totalMinutes">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>This Week</h3>
+          <div class="stat-value" id="weeklyWorkouts">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Streak</h3>
+          <div class="stat-value" id="currentStreak">0</div>
+        </div>
+      </div>
+
+      <div class="workout-list" id="workoutList">
+        <!-- Workouts will be added here -->
+      </div>
+    </div>
+
+    <script>
+      // Initialize workouts from localStorage
+      let workouts = JSON.parse(localStorage.getItem("workouts")) || [];
+
+      // Update stats and display workouts on load
+      updateStats();
+      renderWorkouts();
+
+      function addWorkout() {
+        const type = document.getElementById("workoutType").value;
+        const duration = parseInt(document.getElementById("duration").value);
+        const notes = document.getElementById("notes").value;
+
+        if (!duration || duration < 1) {
+          alert("Please enter a valid duration");
+          return;
+        }
+
+        const workout = {
+          id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+          type,
+          duration,
+          notes,
+          date: new Date().toISOString(),
+        };
+
+        workouts.unshift(workout);
+        saveWorkouts();
+        updateStats();
+        renderWorkouts();
+
+        // Reset form
+        document.getElementById("duration").value = "30";
+        document.getElementById("notes").value = "";
+      }
+
+      function deleteWorkout(id) {
+        if (confirm("Are you sure you want to delete this workout?")) {
+          workouts = workouts.filter((w) => w.id !== id);
+          saveWorkouts();
+          updateStats();
+          renderWorkouts();
+        }
+      }
+
+      function saveWorkouts() {
+        localStorage.setItem("workouts", JSON.stringify(workouts));
+      }
+
+      function updateStats() {
+        const totalWorkouts = workouts.length;
+        const totalMinutes = workouts.reduce((sum, w) => sum + w.duration, 0);
+
+        // Calculate weekly workouts
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const weeklyWorkouts = workouts.filter(
+          (w) => new Date(w.date) > oneWeekAgo
+        ).length;
+
+        // Calculate streak
+        let streak = 0;
+        let currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+
+        const workoutDates = [
+          ...new Set(
+            workouts.map((w) => {
+              const date = new Date(w.date);
+              date.setHours(0, 0, 0, 0);
+              return date.getTime();
+            })
+          ),
+        ].sort((a, b) => b - a);
+
+        if (workoutDates.length > 0) {
+          streak = 1;
+          for (let i = 1; i < workoutDates.length; i++) {
+            const diff =
+              (workoutDates[i - 1] - workoutDates[i]) / (1000 * 60 * 60 * 24);
+            if (diff === 1) {
+              streak++;
+            } else {
+              break;
+            }
+          }
+        }
+
+        document.getElementById("totalWorkouts").textContent = totalWorkouts;
+        document.getElementById("totalMinutes").textContent = totalMinutes;
+        document.getElementById("weeklyWorkouts").textContent = weeklyWorkouts;
+        document.getElementById("currentStreak").textContent = streak;
+      }
+
+      function renderWorkouts() {
+        const workoutList = document.getElementById("workoutList");
+
+        if (workouts.length === 0) {
+          workoutList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No workouts logged yet</h3>
+                        <p>Start logging your workouts to track your fitness journey!</p>
+                    </div>
+                `;
+          return;
+        }
+
+        workoutList.innerHTML = workouts
+          .map(
+            (workout) => `
+                <div class="workout-item">
+                    <div class="workout-date">${new Date(
+                      workout.date
+                    ).toLocaleDateString()}</div>
+                    <div class="workout-type">${
+                      workout.type.charAt(0).toUpperCase() +
+                      workout.type.slice(1)
+                    }</div>
+                    <div class="workout-duration">${
+                      workout.duration
+                    } minutes</div>
+                    <button class="delete-btn" onclick="deleteWorkout('${
+                      workout.id
+                    }')">Delete</button>
+                    ${
+                      workout.notes
+                        ? `<div class="workout-notes">${workout.notes}</div>`
+                        : ""
+                    }
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      function exportWorkouts() {
+        const data = {
+          workouts,
+          exportDate: new Date().toISOString(),
+          stats: {
+            totalWorkouts: workouts.length,
+            totalMinutes: workouts.reduce((sum, w) => sum + w.duration, 0),
+          },
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `fitness-log-${
+          new Date().toISOString().split("T")[0]
+        }.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    </script>
+  </body>
+</html>

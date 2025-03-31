@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video Player</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #1a1a1a;
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #2196f3;
+      }
+
+      .upload-container {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+      }
+
+      .upload-btn {
+        background-color: #2196f3;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s;
+      }
+
+      .upload-btn:hover {
+        background-color: #1976d2;
+      }
+
+      .player-container {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        background: #000;
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .video-container {
+        width: 100%;
+        position: relative;
+        background: #000;
+      }
+
+      video {
+        width: 100%;
+        display: block;
+      }
+
+      .controls {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .video-container:hover .controls {
+        opacity: 1;
+      }
+
+      .progress-container {
+        flex: 1 1 100%;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        border-radius: 2.5px;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background: #2196f3;
+        width: 0;
+        border-radius: 2.5px;
+        position: relative;
+      }
+
+      .control-group {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .control-btn {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 5px;
+        opacity: 0.8;
+        transition: opacity 0.3s;
+      }
+
+      .control-btn:hover {
+        opacity: 1;
+      }
+
+      .time-display {
+        font-size: 0.9rem;
+        color: white;
+        min-width: 100px;
+      }
+
+      .volume-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .volume-slider {
+        width: 80px;
+        height: 5px;
+        -webkit-appearance: none;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2.5px;
+        outline: none;
+      }
+
+      .volume-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 12px;
+        height: 12px;
+        background: white;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      .spacer {
+        flex: 1;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+      }
+
+      .empty-state i {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #444;
+      }
+
+      .keyboard-shortcuts {
+        margin-top: 30px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+
+      .keyboard-shortcuts h3 {
+        margin-bottom: 10px;
+      }
+
+      .keyboard-shortcuts ul {
+        list-style: none;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+      }
+
+      .keyboard-shortcuts li {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 0;
+      }
+
+      .keyboard-shortcuts kbd {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+
+      @media (max-width: 600px) {
+        .controls {
+          padding: 5px;
+        }
+
+        .control-group {
+          gap: 10px;
+        }
+
+        .volume-slider {
+          width: 60px;
+        }
+
+        .time-display {
+          min-width: 80px;
+          font-size: 0.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Video Player</h1>
+
+      <div class="upload-container">
+        <button
+          class="upload-btn"
+          onclick="document.getElementById('videoInput').click()"
+        >
+          Choose Video File
+        </button>
+        <input
+          type="file"
+          id="videoInput"
+          accept="video/*"
+          style="display: none"
+        />
+      </div>
+
+      <div class="player-container" id="playerContainer">
+        <div class="video-container">
+          <video id="videoPlayer">
+            Your browser does not support the video tag.
+          </video>
+
+          <div class="controls" id="controls">
+            <div class="progress-container" id="progressContainer">
+              <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="control-group">
+              <button class="control-btn" id="playPauseBtn">▶️</button>
+              <div class="volume-container">
+                <button class="control-btn" id="muteBtn">🔊</button>
+                <input
+                  type="range"
+                  class="volume-slider"
+                  id="volumeSlider"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value="1"
+                />
+              </div>
+              <span class="time-display" id="timeDisplay">0:00 / 0:00</span>
+              <div class="spacer"></div>
+              <button class="control-btn" id="fullscreenBtn">⛶</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="keyboard-shortcuts">
+        <h3>Keyboard Shortcuts</h3>
+        <ul>
+          <li><kbd>Space</kbd> <span>Play/Pause</span></li>
+          <li><kbd>M</kbd> <span>Mute/Unmute</span></li>
+          <li><kbd>F</kbd> <span>Fullscreen</span></li>
+          <li><kbd>←</kbd> <span>Rewind 10s</span></li>
+          <li><kbd>→</kbd> <span>Forward 10s</span></li>
+          <li><kbd>↑</kbd> <span>Volume Up</span></li>
+          <li><kbd>↓</kbd> <span>Volume Down</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      // DOM Elements
+      const videoPlayer = document.getElementById("videoPlayer");
+      const videoInput = document.getElementById("videoInput");
+      const playerContainer = document.getElementById("playerContainer");
+      const controls = document.getElementById("controls");
+      const playPauseBtn = document.getElementById("playPauseBtn");
+      const muteBtn = document.getElementById("muteBtn");
+      const volumeSlider = document.getElementById("volumeSlider");
+      const progressContainer = document.getElementById("progressContainer");
+      const progressBar = document.getElementById("progressBar");
+      const timeDisplay = document.getElementById("timeDisplay");
+      const fullscreenBtn = document.getElementById("fullscreenBtn");
+
+      // Handle file upload
+      videoInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const url = URL.createObjectURL(file);
+          videoPlayer.src = url;
+          videoPlayer.load();
+        }
+      });
+
+      // Play/Pause
+      playPauseBtn.addEventListener("click", togglePlay);
+      videoPlayer.addEventListener("click", togglePlay);
+
+      function togglePlay() {
+        if (videoPlayer.paused) {
+          videoPlayer.play();
+          playPauseBtn.textContent = "⏸️";
+        } else {
+          videoPlayer.pause();
+          playPauseBtn.textContent = "▶️";
+        }
+      }
+
+      // Volume controls
+      muteBtn.addEventListener("click", () => {
+        videoPlayer.muted = !videoPlayer.muted;
+        muteBtn.textContent = videoPlayer.muted ? "🔇" : "🔊";
+        volumeSlider.value = videoPlayer.muted ? 0 : videoPlayer.volume;
+      });
+
+      volumeSlider.addEventListener("input", (e) => {
+        videoPlayer.volume = e.target.value;
+        videoPlayer.muted = e.target.value === "0";
+        muteBtn.textContent = videoPlayer.muted ? "🔇" : "🔊";
+      });
+
+      // Progress bar
+      videoPlayer.addEventListener("timeupdate", updateProgress);
+      progressContainer.addEventListener("click", seek);
+
+      function updateProgress() {
+        const progress = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+        progressBar.style.width = `${progress}%`;
+
+        const currentTime = formatTime(videoPlayer.currentTime);
+        const duration = formatTime(videoPlayer.duration);
+        timeDisplay.textContent = `${currentTime} / ${duration}`;
+      }
+
+      function seek(e) {
+        const percent = e.offsetX / progressContainer.offsetWidth;
+        videoPlayer.currentTime = percent * videoPlayer.duration;
+      }
+
+      // Fullscreen
+      fullscreenBtn.addEventListener("click", toggleFullscreen);
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          playerContainer.requestFullscreen();
+        } else {
+          document.exitFullscreen();
+        }
+      }
+
+      // Format time
+      function formatTime(seconds) {
+        if (isNaN(seconds)) return "0:00";
+
+        const minutes = Math.floor(seconds / 60);
+        seconds = Math.floor(seconds % 60);
+        return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+      }
+
+      // Keyboard shortcuts
+      document.addEventListener("keydown", (e) => {
+        if (e.target.tagName === "INPUT") return;
+
+        switch (e.code) {
+          case "Space":
+            e.preventDefault();
+            togglePlay();
+            break;
+          case "KeyM":
+            muteBtn.click();
+            break;
+          case "KeyF":
+            toggleFullscreen();
+            break;
+          case "ArrowLeft":
+            videoPlayer.currentTime -= 10;
+            break;
+          case "ArrowRight":
+            videoPlayer.currentTime += 10;
+            break;
+          case "ArrowUp":
+            e.preventDefault();
+            videoPlayer.volume = Math.min(1, videoPlayer.volume + 0.1);
+            volumeSlider.value = videoPlayer.volume;
+            break;
+          case "ArrowDown":
+            e.preventDefault();
+            videoPlayer.volume = Math.max(0, videoPlayer.volume - 0.1);
+            volumeSlider.value = videoPlayer.volume;
+            break;
+        }
+      });
+
+      // Hide controls when mouse is inactive
+      let controlsTimeout;
+      playerContainer.addEventListener("mousemove", () => {
+        controls.style.opacity = "1";
+        clearTimeout(controlsTimeout);
+        controlsTimeout = setTimeout(() => {
+          if (!videoPlayer.paused) {
+            controls.style.opacity = "0";
+          }
+        }, 3000);
+      });
+
+      // Show loading state
+      videoPlayer.addEventListener("waiting", () => {
+        playPauseBtn.textContent = "⌛";
+      });
+
+      videoPlayer.addEventListener("playing", () => {
+        playPauseBtn.textContent = "⏸️";
+      });
+    </script>
+  </body>
+</html>

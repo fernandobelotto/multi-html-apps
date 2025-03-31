@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menstrual Cycle Tracker</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        line-height: 1.6;
+        background-color: #fff5f7;
+        color: #333;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        text-align: center;
+        color: #e91e63;
+        margin-bottom: 30px;
+      }
+
+      .period-form {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #e91e63;
+      }
+
+      input[type="date"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ffcdd2;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+
+      .symptoms-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+        margin: 10px 0;
+      }
+
+      .symptom-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .btn {
+        background: #e91e63;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background 0.3s;
+      }
+
+      .btn:hover {
+        background: #d81b60;
+      }
+
+      .btn-export {
+        background: #9c27b0;
+        margin-left: 10px;
+      }
+
+      .btn-export:hover {
+        background: #7b1fa2;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 2em;
+        font-weight: bold;
+        color: #e91e63;
+        margin: 10px 0;
+      }
+
+      .cycle-visualization {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        overflow-x: auto;
+      }
+
+      .cycle-graph {
+        display: flex;
+        align-items: center;
+        min-height: 100px;
+        padding: 10px 0;
+      }
+
+      .cycle-day {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin: 0 2px;
+        background: #f8bbd0;
+        position: relative;
+      }
+
+      .cycle-day.period {
+        background: #e91e63;
+      }
+
+      .cycle-day.predicted {
+        background: #9c27b0;
+        opacity: 0.5;
+      }
+
+      .cycle-day:hover::after {
+        content: attr(data-date);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .period-list {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .period-item {
+        border-bottom: 1px solid #ffcdd2;
+        padding: 15px;
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 15px;
+        align-items: center;
+      }
+
+      .period-item:last-child {
+        border-bottom: none;
+      }
+
+      .period-dates {
+        color: #666;
+      }
+
+      .period-symptoms {
+        color: #666;
+        font-size: 0.9em;
+      }
+
+      .delete-btn {
+        background: #f44336;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9em;
+      }
+
+      .delete-btn:hover {
+        background: #d32f2f;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+      }
+
+      @media (max-width: 768px) {
+        .period-item {
+          grid-template-columns: 1fr auto;
+        }
+
+        .period-symptoms {
+          grid-column: 1 / -1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Menstrual Cycle Tracker</h1>
+
+      <div class="period-form">
+        <div class="form-group">
+          <label for="startDate">Period Start Date</label>
+          <input type="date" id="startDate" />
+        </div>
+
+        <div class="form-group">
+          <label for="endDate">Period End Date</label>
+          <input type="date" id="endDate" />
+        </div>
+
+        <div class="form-group">
+          <label>Symptoms</label>
+          <div class="symptoms-grid">
+            <div class="symptom-checkbox">
+              <input type="checkbox" id="cramps" value="cramps" />
+              <label for="cramps">Cramps</label>
+            </div>
+            <div class="symptom-checkbox">
+              <input type="checkbox" id="headache" value="headache" />
+              <label for="headache">Headache</label>
+            </div>
+            <div class="symptom-checkbox">
+              <input type="checkbox" id="bloating" value="bloating" />
+              <label for="bloating">Bloating</label>
+            </div>
+            <div class="symptom-checkbox">
+              <input type="checkbox" id="fatigue" value="fatigue" />
+              <label for="fatigue">Fatigue</label>
+            </div>
+            <div class="symptom-checkbox">
+              <input type="checkbox" id="moodSwings" value="moodSwings" />
+              <label for="moodSwings">Mood Swings</label>
+            </div>
+            <div class="symptom-checkbox">
+              <input type="checkbox" id="backPain" value="backPain" />
+              <label for="backPain">Back Pain</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Notes</label>
+          <textarea
+            id="notes"
+            placeholder="Add any additional notes..."
+          ></textarea>
+        </div>
+
+        <button class="btn" onclick="addPeriod()">Log Period</button>
+        <button class="btn btn-export" onclick="exportData()">
+          Export Data
+        </button>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <h3>Average Cycle Length</h3>
+          <div class="stat-value" id="avgCycleLength">--</div>
+          <div>days</div>
+        </div>
+        <div class="stat-card">
+          <h3>Average Period Length</h3>
+          <div class="stat-value" id="avgPeriodLength">--</div>
+          <div>days</div>
+        </div>
+        <div class="stat-card">
+          <h3>Next Period</h3>
+          <div class="stat-value" id="nextPeriod">--</div>
+          <div>estimated</div>
+        </div>
+      </div>
+
+      <div class="cycle-visualization">
+        <h3>Cycle Overview</h3>
+        <div class="cycle-graph" id="cycleGraph">
+          <!-- Cycle visualization will be added here -->
+        </div>
+      </div>
+
+      <div class="period-list" id="periodList">
+        <!-- Period entries will be added here -->
+      </div>
+    </div>
+
+    <script>
+      // Initialize data from localStorage
+      let periods = JSON.parse(localStorage.getItem("periods")) || [];
+
+      // Update display on load
+      updateStats();
+      renderPeriods();
+      updateCycleVisualization();
+
+      function addPeriod() {
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+        const notes = document.getElementById("notes").value;
+
+        if (!startDate || !endDate) {
+          alert("Please enter both start and end dates");
+          return;
+        }
+
+        if (new Date(endDate) < new Date(startDate)) {
+          alert("End date cannot be before start date");
+          return;
+        }
+
+        const symptoms = [
+          "cramps",
+          "headache",
+          "bloating",
+          "fatigue",
+          "moodSwings",
+          "backPain",
+        ]
+          .filter((symptom) => document.getElementById(symptom).checked)
+          .map((symptom) => symptom.replace(/([A-Z])/g, " $1").toLowerCase());
+
+        const period = {
+          id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+          startDate,
+          endDate,
+          symptoms,
+          notes,
+        };
+
+        periods.unshift(period);
+        savePeriods();
+        updateStats();
+        renderPeriods();
+        updateCycleVisualization();
+
+        // Reset form
+        document.getElementById("startDate").value = "";
+        document.getElementById("endDate").value = "";
+        document.getElementById("notes").value = "";
+        symptoms.forEach((symptom) => {
+          document.getElementById(symptom.replace(/\s+/g, "")).checked = false;
+        });
+      }
+
+      function deletePeriod(id) {
+        if (confirm("Are you sure you want to delete this period entry?")) {
+          periods = periods.filter((p) => p.id !== id);
+          savePeriods();
+          updateStats();
+          renderPeriods();
+          updateCycleVisualization();
+        }
+      }
+
+      function savePeriods() {
+        localStorage.setItem("periods", JSON.stringify(periods));
+      }
+
+      function updateStats() {
+        if (periods.length < 2) {
+          document.getElementById("avgCycleLength").textContent = "--";
+          document.getElementById("avgPeriodLength").textContent = "--";
+          document.getElementById("nextPeriod").textContent = "--";
+          return;
+        }
+
+        // Calculate average cycle length
+        let totalCycleLength = 0;
+        for (let i = 0; i < periods.length - 1; i++) {
+          const currentStart = new Date(periods[i].startDate);
+          const nextStart = new Date(periods[i + 1].startDate);
+          const cycleDays = Math.round(
+            (currentStart - nextStart) / (1000 * 60 * 60 * 24)
+          );
+          totalCycleLength += cycleDays;
+        }
+        const avgCycle = Math.round(totalCycleLength / (periods.length - 1));
+
+        // Calculate average period length
+        const totalPeriodLength = periods.reduce((sum, period) => {
+          const start = new Date(period.startDate);
+          const end = new Date(period.endDate);
+          return sum + Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
+        }, 0);
+        const avgPeriod = Math.round(totalPeriodLength / periods.length);
+
+        // Predict next period
+        const lastStart = new Date(periods[0].startDate);
+        const nextPeriodDate = new Date(lastStart);
+        nextPeriodDate.setDate(lastStart.getDate() + avgCycle);
+
+        document.getElementById("avgCycleLength").textContent = avgCycle;
+        document.getElementById("avgPeriodLength").textContent = avgPeriod;
+        document.getElementById("nextPeriod").textContent =
+          nextPeriodDate.toLocaleDateString();
+      }
+
+      function updateCycleVisualization() {
+        const cycleGraph = document.getElementById("cycleGraph");
+        cycleGraph.innerHTML = "";
+
+        if (periods.length === 0) return;
+
+        const today = new Date();
+        const days = [];
+
+        // Show last 60 days and predicted next period
+        for (let i = -30; i <= 30; i++) {
+          const date = new Date(today);
+          date.setDate(today.getDate() + i);
+          const dateStr = date.toISOString().split("T")[0];
+
+          const dayEl = document.createElement("div");
+          dayEl.className = "cycle-day";
+          dayEl.setAttribute("data-date", date.toLocaleDateString());
+
+          // Check if this date falls within any period
+          const isPeriod = periods.some(
+            (period) => dateStr >= period.startDate && dateStr <= period.endDate
+          );
+
+          // Check if this date falls within predicted next period
+          if (periods.length >= 2) {
+            const avgCycle = Math.round(
+              periods.slice(0, -1).reduce((sum, period, i) => {
+                const nextPeriod = periods[i + 1];
+                return (
+                  sum +
+                  (new Date(period.startDate) -
+                    new Date(nextPeriod.startDate)) /
+                    (1000 * 60 * 60 * 24)
+                );
+              }, 0) /
+                (periods.length - 1)
+            );
+
+            const lastStart = new Date(periods[0].startDate);
+            const predictedStart = new Date(lastStart);
+            predictedStart.setDate(lastStart.getDate() + avgCycle);
+
+            const predictedEnd = new Date(predictedStart);
+            predictedEnd.setDate(
+              predictedStart.getDate() +
+                Math.round(
+                  periods.reduce(
+                    (sum, period) =>
+                      sum +
+                      (new Date(period.endDate) - new Date(period.startDate)) /
+                        (1000 * 60 * 60 * 24) +
+                      1,
+                    0
+                  ) / periods.length
+                )
+            );
+
+            if (
+              date >= predictedStart &&
+              date <= predictedEnd &&
+              date > today
+            ) {
+              dayEl.classList.add("predicted");
+            }
+          }
+
+          if (isPeriod) {
+            dayEl.classList.add("period");
+          }
+
+          cycleGraph.appendChild(dayEl);
+        }
+      }
+
+      function renderPeriods() {
+        const periodList = document.getElementById("periodList");
+
+        if (periods.length === 0) {
+          periodList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No periods logged yet</h3>
+                        <p>Start tracking your cycle by logging your period dates.</p>
+                    </div>
+                `;
+          return;
+        }
+
+        periodList.innerHTML = periods
+          .map(
+            (period) => `
+                <div class="period-item">
+                    <div class="period-dates">
+                        ${new Date(period.startDate).toLocaleDateString()} - 
+                        ${new Date(period.endDate).toLocaleDateString()}
+                    </div>
+                    <div class="period-symptoms">
+                        ${
+                          period.symptoms.length > 0
+                            ? `Symptoms: ${period.symptoms.join(", ")}`
+                            : "No symptoms recorded"
+                        }
+                        ${period.notes ? `<br>Notes: ${period.notes}` : ""}
+                    </div>
+                    <button class="delete-btn" onclick="deletePeriod('${
+                      period.id
+                    }')">Delete</button>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      function exportData() {
+        const data = {
+          periods,
+          exportDate: new Date().toISOString(),
+          stats: {
+            totalPeriods: periods.length,
+            averageCycleLength:
+              document.getElementById("avgCycleLength").textContent,
+            averagePeriodLength:
+              document.getElementById("avgPeriodLength").textContent,
+          },
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `menstrual-cycle-data-${
+          new Date().toISOString().split("T")[0]
+        }.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    </script>
+  </body>
+</html>

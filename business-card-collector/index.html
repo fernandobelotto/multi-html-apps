@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Business Card Collector</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #f5f5f5;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background-color: #2196f3;
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .filters {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      .search-input {
+        flex: 1;
+        min-width: 200px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+
+      .filter-select {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        min-width: 150px;
+      }
+
+      .card-form {
+        padding: 20px;
+        border-bottom: 1px solid #dee2e6;
+        display: none;
+        background-color: #fff;
+      }
+
+      .card-form.active {
+        display: block;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+        font-weight: bold;
+      }
+
+      .form-group input,
+      .form-group textarea,
+      .form-group select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+
+      .form-group textarea {
+        height: 100px;
+        resize: vertical;
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 20px;
+      }
+
+      .business-card {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        background-color: #fff;
+        transition: transform 0.2s, box-shadow 0.2s;
+        position: relative;
+      }
+
+      .business-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-header {
+        border-bottom: 2px solid #2196f3;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+      }
+
+      .card-name {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #2196f3;
+      }
+
+      .card-title {
+        color: #666;
+        font-style: italic;
+      }
+
+      .card-company {
+        font-weight: bold;
+        margin-top: 5px;
+      }
+
+      .card-details {
+        margin-top: 10px;
+      }
+
+      .card-detail {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+        color: #666;
+      }
+
+      .card-detail i {
+        margin-right: 8px;
+        width: 20px;
+        color: #2196f3;
+      }
+
+      .card-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        gap: 5px;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      .business-card:hover .card-actions {
+        opacity: 1;
+      }
+
+      .btn {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.2s;
+      }
+
+      .btn-primary {
+        background-color: #2196f3;
+        color: white;
+      }
+
+      .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+      }
+
+      .btn-danger {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      .btn:hover {
+        opacity: 0.9;
+      }
+
+      .add-card-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #2196f3;
+        color: white;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s;
+      }
+
+      .add-card-btn:hover {
+        transform: scale(1.1);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #666;
+      }
+
+      .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: #dee2e6;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 10px;
+      }
+
+      .tag {
+        background-color: #e3f2fd;
+        color: #2196f3;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+      }
+
+      @media (max-width: 600px) {
+        .filters {
+          flex-direction: column;
+        }
+
+        .search-input,
+        .filter-select {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Business Card Collector</h1>
+        <p>Organize your professional network</p>
+      </div>
+
+      <div class="filters">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search business cards..."
+          id="searchInput"
+        />
+        <select class="filter-select" id="industryFilter">
+          <option value="">All Industries</option>
+          <option value="Technology">Technology</option>
+          <option value="Finance">Finance</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Education">Education</option>
+          <option value="Other">Other</option>
+        </select>
+        <select class="filter-select" id="sortBy">
+          <option value="name">Sort by Name</option>
+          <option value="company">Sort by Company</option>
+          <option value="date">Sort by Date Added</option>
+        </select>
+      </div>
+
+      <div class="card-form" id="cardForm">
+        <h2 id="formTitle">Add New Business Card</h2>
+        <form id="addCardForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="name">Full Name*</label>
+              <input type="text" id="name" required />
+            </div>
+            <div class="form-group">
+              <label for="title">Job Title*</label>
+              <input type="text" id="title" required />
+            </div>
+            <div class="form-group">
+              <label for="company">Company*</label>
+              <input type="text" id="company" required />
+            </div>
+            <div class="form-group">
+              <label for="industry">Industry*</label>
+              <select id="industry" required>
+                <option value="Technology">Technology</option>
+                <option value="Finance">Finance</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Education">Education</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="email">Email*</label>
+              <input type="email" id="email" required />
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone*</label>
+              <input type="tel" id="phone" required />
+            </div>
+            <div class="form-group">
+              <label for="website">Website</label>
+              <input type="url" id="website" />
+            </div>
+            <div class="form-group">
+              <label for="linkedin">LinkedIn Profile</label>
+              <input type="url" id="linkedin" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="address">Address</label>
+            <textarea id="address"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea
+              id="notes"
+              placeholder="Add any additional notes or meeting details..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="tags">Tags (comma-separated)</label>
+            <input
+              type="text"
+              id="tags"
+              placeholder="e.g., client, vendor, potential partner"
+            />
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary">
+              Save Business Card
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="toggleForm(false)"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card-grid" id="cardGrid">
+        <!-- Business cards will be dynamically added here -->
+      </div>
+    </div>
+
+    <button class="add-card-btn" onclick="toggleForm(true)">+</button>
+
+    <script>
+      // Initialize cards from localStorage or empty array
+      let businessCards =
+        JSON.parse(localStorage.getItem("businessCards")) || [];
+      let editingIndex = -1;
+
+      // DOM Elements
+      const cardForm = document.getElementById("cardForm");
+      const addCardForm = document.getElementById("addCardForm");
+      const cardGrid = document.getElementById("cardGrid");
+      const searchInput = document.getElementById("searchInput");
+      const industryFilter = document.getElementById("industryFilter");
+      const sortBy = document.getElementById("sortBy");
+      const formTitle = document.getElementById("formTitle");
+
+      // Toggle form visibility
+      function toggleForm(show, card = null) {
+        cardForm.classList.toggle("active", show);
+        if (show && card) {
+          // Edit mode
+          formTitle.textContent = "Edit Business Card";
+          document.getElementById("name").value = card.name;
+          document.getElementById("title").value = card.title;
+          document.getElementById("company").value = card.company;
+          document.getElementById("industry").value = card.industry;
+          document.getElementById("email").value = card.email;
+          document.getElementById("phone").value = card.phone;
+          document.getElementById("website").value = card.website || "";
+          document.getElementById("linkedin").value = card.linkedin || "";
+          document.getElementById("address").value = card.address || "";
+          document.getElementById("notes").value = card.notes || "";
+          document.getElementById("tags").value = card.tags.join(", ");
+          editingIndex = businessCards.findIndex((c) => c.id === card.id);
+        } else if (show) {
+          // Add mode
+          formTitle.textContent = "Add New Business Card";
+          addCardForm.reset();
+          editingIndex = -1;
+        }
+      }
+
+      // Generate unique ID
+      function generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+      }
+
+      // Add or update business card
+      addCardForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const card = {
+          id: editingIndex >= 0 ? businessCards[editingIndex].id : generateId(),
+          name: document.getElementById("name").value,
+          title: document.getElementById("title").value,
+          company: document.getElementById("company").value,
+          industry: document.getElementById("industry").value,
+          email: document.getElementById("email").value,
+          phone: document.getElementById("phone").value,
+          website: document.getElementById("website").value,
+          linkedin: document.getElementById("linkedin").value,
+          address: document.getElementById("address").value,
+          notes: document.getElementById("notes").value,
+          tags: document
+            .getElementById("tags")
+            .value.split(",")
+            .map((tag) => tag.trim())
+            .filter((tag) => tag),
+          dateAdded:
+            editingIndex >= 0
+              ? businessCards[editingIndex].dateAdded
+              : new Date().toISOString(),
+        };
+
+        if (editingIndex >= 0) {
+          businessCards[editingIndex] = card;
+        } else {
+          businessCards.push(card);
+        }
+
+        saveAndRenderCards();
+        toggleForm(false);
+      });
+
+      // Delete business card
+      function deleteCard(id) {
+        if (confirm("Are you sure you want to delete this business card?")) {
+          businessCards = businessCards.filter((card) => card.id !== id);
+          saveAndRenderCards();
+        }
+      }
+
+      // Save cards to localStorage and render
+      function saveAndRenderCards() {
+        localStorage.setItem("businessCards", JSON.stringify(businessCards));
+        renderCards();
+      }
+
+      // Filter and sort cards
+      function filterAndSortCards() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const industryValue = industryFilter.value;
+        const sortValue = sortBy.value;
+
+        let filteredCards = businessCards.filter(
+          (card) =>
+            (card.name.toLowerCase().includes(searchTerm) ||
+              card.company.toLowerCase().includes(searchTerm) ||
+              card.email.toLowerCase().includes(searchTerm) ||
+              card.tags.some((tag) =>
+                tag.toLowerCase().includes(searchTerm)
+              )) &&
+            (!industryValue || card.industry === industryValue)
+        );
+
+        // Sort cards
+        filteredCards.sort((a, b) => {
+          switch (sortValue) {
+            case "name":
+              return a.name.localeCompare(b.name);
+            case "company":
+              return a.company.localeCompare(b.company);
+            case "date":
+              return new Date(b.dateAdded) - new Date(a.dateAdded);
+            default:
+              return 0;
+          }
+        });
+
+        return filteredCards;
+      }
+
+      // Render business cards
+      function renderCards() {
+        const filteredCards = filterAndSortCards();
+
+        if (filteredCards.length === 0) {
+          cardGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i>💼</i>
+                        <p>No business cards found</p>
+                        <p>Add your first business card using the + button</p>
+                    </div>
+                `;
+          return;
+        }
+
+        cardGrid.innerHTML = filteredCards
+          .map(
+            (card) => `
+                <div class="business-card">
+                    <div class="card-actions">
+                        <button class="btn btn-secondary" onclick="toggleForm(true, ${JSON.stringify(
+                          card
+                        )})">
+                            Edit
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteCard('${
+                          card.id
+                        }')">
+                            Delete
+                        </button>
+                    </div>
+                    <div class="card-header">
+                        <div class="card-name">${card.name}</div>
+                        <div class="card-title">${card.title}</div>
+                        <div class="card-company">${card.company}</div>
+                    </div>
+                    <div class="card-details">
+                        <div class="card-detail">
+                            <i>📧</i> ${card.email}
+                        </div>
+                        <div class="card-detail">
+                            <i>📱</i> ${card.phone}
+                        </div>
+                        ${
+                          card.website
+                            ? `
+                            <div class="card-detail">
+                                <i>🌐</i> <a href="${card.website}" target="_blank">${card.website}</a>
+                            </div>
+                        `
+                            : ""
+                        }
+                        ${
+                          card.linkedin
+                            ? `
+                            <div class="card-detail">
+                                <i>💼</i> <a href="${card.linkedin}" target="_blank">LinkedIn Profile</a>
+                            </div>
+                        `
+                            : ""
+                        }
+                        ${
+                          card.address
+                            ? `
+                            <div class="card-detail">
+                                <i>📍</i> ${card.address}
+                            </div>
+                        `
+                            : ""
+                        }
+                        ${
+                          card.notes
+                            ? `
+                            <div class="card-detail">
+                                <i>📝</i> ${card.notes}
+                            </div>
+                        `
+                            : ""
+                        }
+                    </div>
+                    <div class="tags">
+                        ${card.tags
+                          .map((tag) => `<span class="tag">${tag}</span>`)
+                          .join("")}
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      // Event listeners for filtering and sorting
+      searchInput.addEventListener("input", renderCards);
+      industryFilter.addEventListener("change", renderCards);
+      sortBy.addEventListener("change", renderCards);
+
+      // Initial render
+      renderCards();
+    </script>
+  </body>
+</html>
