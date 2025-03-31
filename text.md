@@ -120,7 +120,7 @@
 
 ✅ Book Tracker: Log books you've read, are reading, or want to read.
 
-📝 Digital Ruler: Use on-screen measurements for rough size estimates (based on screen dimensions).
+✅ Digital Ruler: Use on-screen measurements for rough size estimates (based on screen dimensions).
 
 📝 Color Picker Tool: Select, display, and save colors chosen from a palette or image.
 

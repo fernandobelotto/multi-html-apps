@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Digital Ruler</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        user-select: none;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        background-color: #f8f9fa;
+        color: #343a40;
+        padding: 20px;
+        overflow: hidden;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        color: #2d3748;
+        margin-bottom: 10px;
+      }
+
+      .calibration {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .calibration-title {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #2d3748;
+      }
+
+      .calibration-input {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      input {
+        padding: 8px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        width: 100px;
+      }
+
+      select {
+        padding: 8px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        background: white;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        background-color: #4299e1;
+        color: white;
+      }
+
+      .btn:hover {
+        background-color: #3182ce;
+      }
+
+      .ruler-container {
+        position: relative;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        touch-action: none;
+      }
+
+      .ruler {
+        position: relative;
+        width: 100%;
+        height: 150px;
+        background: #f7fafc;
+        border: 2px solid #4299e1;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .ruler-marks {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .measurement-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 2px;
+        height: 100%;
+        background-color: #e53e3e;
+        cursor: move;
+      }
+
+      .measurement-value {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        pointer-events: none;
+      }
+
+      .controls {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .unit-toggle {
+        display: flex;
+        gap: 5px;
+        margin-left: auto;
+      }
+
+      .unit-btn {
+        padding: 8px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .unit-btn.active {
+        background: #4299e1;
+        color: white;
+        border-color: #4299e1;
+      }
+
+      .instructions {
+        background: #ebf8ff;
+        padding: 15px;
+        border-radius: 6px;
+        margin: 20px 0;
+        font-size: 0.9rem;
+        color: #2c5282;
+      }
+
+      @media (max-width: 768px) {
+        .calibration-input {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .controls {
+          flex-direction: column;
+        }
+
+        .unit-toggle {
+          margin-left: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Digital Ruler</h1>
+      </header>
+
+      <div class="calibration">
+        <div class="calibration-title">Calibration</div>
+        <div class="calibration-input">
+          <input
+            type="number"
+            id="referenceSize"
+            placeholder="Size"
+            step="0.1"
+            min="0"
+          />
+          <select id="referenceUnit">
+            <option value="cm">Centimeters</option>
+            <option value="inch">Inches</option>
+          </select>
+          <div>of a</div>
+          <select id="referenceObject">
+            <option value="credit-card">Credit Card</option>
+            <option value="dollar-bill">Dollar Bill</option>
+            <option value="a4-paper">A4 Paper</option>
+            <option value="custom">Custom Object</option>
+          </select>
+          <button class="btn" onclick="calibrate()">Calibrate</button>
+        </div>
+      </div>
+
+      <div class="instructions">
+        📏 Drag the red line to measure. Click "Reset" to start over. Touch and
+        drag anywhere on the ruler for precise measurements.
+      </div>
+
+      <div class="ruler-container">
+        <div class="ruler" id="ruler">
+          <div class="ruler-marks" id="rulerMarks"></div>
+          <div class="measurement-line" id="measurementLine">
+            <div class="measurement-value" id="measurementValue">0 cm</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" onclick="resetMeasurement()">Reset</button>
+          <div class="unit-toggle">
+            <button class="unit-btn active" onclick="setUnit('cm')">cm</button>
+            <button class="unit-btn" onclick="setUnit('inch')">inch</button>
+            <button class="unit-btn" onclick="setUnit('px')">px</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Reference objects with their standard sizes in mm
+      const referenceObjects = {
+        "credit-card": { width: 85.6, height: 53.98 },
+        "dollar-bill": { width: 156.1, height: 66.3 },
+        "a4-paper": { width: 210, height: 297 },
+      };
+
+      let pixelsPerUnit = 1;
+      let currentUnit = "cm";
+      let isDragging = false;
+      let startX = 0;
+      let startLeft = 0;
+
+      const ruler = document.getElementById("ruler");
+      const measurementLine = document.getElementById("measurementLine");
+      const measurementValue = document.getElementById("measurementValue");
+      const rulerMarks = document.getElementById("rulerMarks");
+
+      // Initialize ruler marks
+      function initializeRulerMarks() {
+        const rulerWidth = ruler.offsetWidth;
+        let marksHtml = "";
+
+        for (let i = 0; i <= rulerWidth; i += 10) {
+          const height = i % 50 === 0 ? "20px" : "10px";
+          marksHtml += `<div style="position: absolute; left: ${i}px; top: 0; width: 1px; height: ${height}; background: #cbd5e0;"></div>`;
+
+          if (i % 50 === 0) {
+            marksHtml += `<div style="position: absolute; left: ${i}px; top: 25px; transform: translateX(-50%); font-size: 10px; color: #718096;">${i}</div>`;
+          }
+        }
+
+        rulerMarks.innerHTML = marksHtml;
+      }
+
+      // Calibrate the ruler
+      function calibrate() {
+        const referenceSize = parseFloat(
+          document.getElementById("referenceSize").value
+        );
+        const referenceUnit = document.getElementById("referenceUnit").value;
+        const referenceObject =
+          document.getElementById("referenceObject").value;
+
+        if (!referenceSize || referenceSize <= 0) {
+          alert("Please enter a valid reference size");
+          return;
+        }
+
+        let referencePixels;
+        if (referenceObject === "custom") {
+          referencePixels = ruler.offsetWidth / 2; // Use half the ruler width as reference
+        } else {
+          const objectSize = referenceObjects[referenceObject].width;
+          referencePixels = (objectSize / 10) * (window.devicePixelRatio || 1); // Convert mm to cm
+        }
+
+        // Calculate pixels per unit
+        if (referenceUnit === "cm") {
+          pixelsPerUnit = referencePixels / referenceSize;
+        } else {
+          pixelsPerUnit = referencePixels / (referenceSize * 2.54); // Convert inches to cm
+        }
+
+        updateMeasurement();
+        initializeRulerMarks();
+      }
+
+      // Convert pixels to current unit
+      function pixelsToUnit(pixels) {
+        let value;
+        switch (currentUnit) {
+          case "cm":
+            value = pixels / pixelsPerUnit;
+            break;
+          case "inch":
+            value = pixels / pixelsPerUnit / 2.54;
+            break;
+          case "px":
+            value = pixels;
+            break;
+        }
+        return Math.round(value * 10) / 10;
+      }
+
+      // Update measurement display
+      function updateMeasurement() {
+        const pixels = parseFloat(measurementLine.style.left || 0);
+        const value = pixelsToUnit(pixels);
+        measurementValue.textContent = `${value} ${currentUnit}`;
+      }
+
+      // Set measurement unit
+      function setUnit(unit) {
+        currentUnit = unit;
+        document.querySelectorAll(".unit-btn").forEach((btn) => {
+          btn.classList.toggle("active", btn.textContent === unit);
+        });
+        updateMeasurement();
+      }
+
+      // Reset measurement
+      function resetMeasurement() {
+        measurementLine.style.left = "0px";
+        updateMeasurement();
+      }
+
+      // Event listeners for drag functionality
+      measurementLine.addEventListener("mousedown", startDragging);
+      measurementLine.addEventListener("touchstart", startDragging);
+
+      document.addEventListener("mousemove", drag);
+      document.addEventListener("touchmove", drag);
+
+      document.addEventListener("mouseup", stopDragging);
+      document.addEventListener("touchend", stopDragging);
+
+      function startDragging(e) {
+        isDragging = true;
+        startX = e.type === "mousedown" ? e.clientX : e.touches[0].clientX;
+        startLeft = parseFloat(measurementLine.style.left || 0);
+        e.preventDefault();
+      }
+
+      function drag(e) {
+        if (!isDragging) return;
+
+        const x = e.type === "mousemove" ? e.clientX : e.touches[0].clientX;
+        const deltaX = x - startX;
+        const newLeft = Math.max(
+          0,
+          Math.min(ruler.offsetWidth, startLeft + deltaX)
+        );
+
+        measurementLine.style.left = `${newLeft}px`;
+        updateMeasurement();
+        e.preventDefault();
+      }
+
+      function stopDragging() {
+        isDragging = false;
+      }
+
+      // Initialize the ruler
+      window.addEventListener("load", () => {
+        initializeRulerMarks();
+        // Set default calibration (1cm = 37.8 pixels)
+        pixelsPerUnit = 37.8;
+      });
+
+      // Handle window resize
+      window.addEventListener("resize", initializeRulerMarks);
+    </script>
+  </body>
+</html>
