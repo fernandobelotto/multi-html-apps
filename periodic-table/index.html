@@ -1,0 +1,2360 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Periodic Table Guide</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        line-height: 1.6;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      .search-bar {
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      #elementSearch {
+        padding: 8px 15px;
+        width: 300px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      .periodic-table {
+        display: grid;
+        grid-template-columns: repeat(18, minmax(45px, 1fr));
+        gap: 4px;
+        margin-bottom: 20px;
+        padding: 10px;
+      }
+
+      .element {
+        aspect-ratio: 1;
+        padding: 4px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        font-size: 0.8em;
+        position: relative;
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 45px;
+      }
+
+      .element:hover {
+        transform: scale(1.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+
+      .element.selected {
+        border: 2px solid #2196f3;
+        background-color: #e3f2fd;
+      }
+
+      .atomic-number {
+        font-size: 0.7em;
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        color: #666;
+      }
+
+      .symbol {
+        font-size: 1.1em;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 2px;
+      }
+
+      .name {
+        font-size: 0.6em;
+        text-align: center;
+        margin-top: 1px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding: 0 2px;
+      }
+
+      .element-details {
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-top: 20px;
+        background-color: #fff;
+        display: none;
+      }
+
+      .element-details.active {
+        display: block;
+      }
+
+      .element-details h2 {
+        color: #333;
+        margin-bottom: 15px;
+      }
+
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+      }
+
+      .detail-item {
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+      }
+
+      .detail-item h3 {
+        color: #666;
+        font-size: 0.9em;
+        margin-bottom: 5px;
+      }
+
+      .detail-item p {
+        color: #333;
+        font-size: 1.1em;
+      }
+
+      /* Element Categories */
+      .alkali-metal {
+        background-color: #ffcdd2;
+      }
+      .alkaline-earth {
+        background-color: #f8bbd0;
+      }
+      .transition-metal {
+        background-color: #e1bee7;
+      }
+      .post-transition {
+        background-color: #d1c4e9;
+      }
+      .metalloid {
+        background-color: #c5cae9;
+      }
+      .nonmetal {
+        background-color: #bbdefb;
+      }
+      .noble-gas {
+        background-color: #b3e5fc;
+      }
+      .lanthanide {
+        background-color: #b2ebf2;
+      }
+      .actinide {
+        background-color: #b2dfdb;
+      }
+
+      .legend {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        font-size: 0.9em;
+      }
+
+      .legend-color {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+        border-radius: 4px;
+      }
+
+      .empty-cell {
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      @media (max-width: 1200px) {
+        .periodic-table {
+          grid-template-columns: repeat(18, minmax(35px, 1fr));
+          gap: 3px;
+        }
+
+        .element {
+          font-size: 0.7em;
+          min-width: 35px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .periodic-table {
+          grid-template-columns: repeat(18, minmax(30px, 1fr));
+          gap: 2px;
+          padding: 5px;
+        }
+
+        .element {
+          font-size: 0.6em;
+          min-width: 30px;
+          padding: 2px;
+        }
+
+        .container {
+          padding: 10px;
+        }
+
+        #elementSearch {
+          width: 100%;
+          max-width: 300px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Periodic Table Guide</h1>
+
+      <div class="search-bar">
+        <input
+          type="text"
+          id="elementSearch"
+          placeholder="Search for an element..."
+        />
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color alkali-metal"></div>
+          <span>Alkali Metals</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color alkaline-earth"></div>
+          <span>Alkaline Earth Metals</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color transition-metal"></div>
+          <span>Transition Metals</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color post-transition"></div>
+          <span>Post-Transition Metals</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color metalloid"></div>
+          <span>Metalloids</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color nonmetal"></div>
+          <span>Nonmetals</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color noble-gas"></div>
+          <span>Noble Gases</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color lanthanide"></div>
+          <span>Lanthanides</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color actinide"></div>
+          <span>Actinides</span>
+        </div>
+      </div>
+
+      <div class="periodic-table" id="periodicTable"></div>
+
+      <div class="element-details" id="elementDetails">
+        <h2 id="elementTitle">Element Details</h2>
+        <div class="detail-grid" id="elementInfo"></div>
+      </div>
+    </div>
+
+    <script>
+      const elements = [
+        {
+          number: 1,
+          symbol: "H",
+          name: "Hydrogen",
+          category: "nonmetal",
+          mass: 1.008,
+          period: 1,
+          group: 1,
+          electronConfig: "1s¹",
+          electronegativity: 2.2,
+          density: 0.00008988,
+          meltingPoint: -259.14,
+          boilingPoint: -252.87,
+          discoveredBy: "Henry Cavendish",
+          yearDiscovered: 1766,
+        },
+        {
+          number: 2,
+          symbol: "He",
+          name: "Helium",
+          category: "noble-gas",
+          mass: 4.003,
+          period: 1,
+          group: 18,
+          electronConfig: "1s²",
+          electronegativity: null,
+          density: 0.0001785,
+          meltingPoint: -272.2,
+          boilingPoint: -268.93,
+          discoveredBy: "Pierre Janssen",
+          yearDiscovered: 1868,
+        },
+        {
+          number: 3,
+          symbol: "Li",
+          name: "Lithium",
+          category: "alkali-metal",
+          mass: 6.94,
+          period: 2,
+          group: 1,
+          electronConfig: "[He]2s¹",
+          electronegativity: 0.98,
+          density: 0.534,
+          meltingPoint: 180.54,
+          boilingPoint: 1342,
+          discoveredBy: "Johan August Arfwedson",
+          yearDiscovered: 1817,
+        },
+        {
+          number: 4,
+          symbol: "Be",
+          name: "Beryllium",
+          category: "alkaline-earth",
+          mass: 9.012,
+          period: 2,
+          group: 2,
+          electronConfig: "[He]2s²",
+          electronegativity: 1.57,
+          density: 1.85,
+          meltingPoint: 1287,
+          boilingPoint: 2470,
+          discoveredBy: "Louis Nicolas Vauquelin",
+          yearDiscovered: 1797,
+        },
+        {
+          number: 5,
+          symbol: "B",
+          name: "Boron",
+          category: "metalloid",
+          mass: 10.81,
+          period: 2,
+          group: 13,
+          electronConfig: "[He]2s²2p¹",
+          electronegativity: 2.04,
+          density: 2.34,
+          meltingPoint: 2075,
+          boilingPoint: 4000,
+          discoveredBy: "Joseph Louis Gay-Lussac",
+          yearDiscovered: 1808,
+        },
+        {
+          number: 6,
+          symbol: "C",
+          name: "Carbon",
+          category: "nonmetal",
+          mass: 12.01,
+          period: 2,
+          group: 14,
+          electronConfig: "[He]2s²2p²",
+          electronegativity: 2.55,
+          density: 2.267,
+          meltingPoint: 3550,
+          boilingPoint: 4827,
+          discoveredBy: "Known to prehistoric humans",
+          yearDiscovered: null,
+        },
+        {
+          number: 7,
+          symbol: "N",
+          name: "Nitrogen",
+          category: "nonmetal",
+          mass: 14.01,
+          period: 2,
+          group: 15,
+          electronConfig: "[He]2s²2p³",
+          electronegativity: 3.04,
+          density: 0.001251,
+          meltingPoint: -210,
+          boilingPoint: -195.79,
+          discoveredBy: "Daniel Rutherford",
+          yearDiscovered: 1772,
+        },
+        {
+          number: 8,
+          symbol: "O",
+          name: "Oxygen",
+          category: "nonmetal",
+          mass: 16.0,
+          period: 2,
+          group: 16,
+          electronConfig: "[He]2s²2p⁴",
+          electronegativity: 3.44,
+          density: 0.001429,
+          meltingPoint: -218.79,
+          boilingPoint: -182.95,
+          discoveredBy: "Carl Wilhelm Scheele",
+          yearDiscovered: 1772,
+        },
+        {
+          number: 9,
+          symbol: "F",
+          name: "Fluorine",
+          category: "nonmetal",
+          mass: 19.0,
+          period: 2,
+          group: 17,
+          electronConfig: "[He]2s²2p⁵",
+          electronegativity: 3.98,
+          density: 0.001696,
+          meltingPoint: -219.62,
+          boilingPoint: -188.12,
+          discoveredBy: "Henri Moissan",
+          yearDiscovered: 1886,
+        },
+        {
+          number: 10,
+          symbol: "Ne",
+          name: "Neon",
+          category: "noble-gas",
+          mass: 20.18,
+          period: 2,
+          group: 18,
+          electronConfig: "[He]2s²2p⁶",
+          electronegativity: null,
+          density: 0.0008999,
+          meltingPoint: -248.59,
+          boilingPoint: -246.08,
+          discoveredBy: "William Ramsay",
+          yearDiscovered: 1898,
+        },
+        {
+          number: 11,
+          symbol: "Na",
+          name: "Sodium",
+          category: "alkali-metal",
+          mass: 22.99,
+          period: 3,
+          group: 1,
+          electronConfig: "[Ne]3s¹",
+          electronegativity: 0.93,
+          density: 0.971,
+          meltingPoint: 97.72,
+          boilingPoint: 883,
+          discoveredBy: "Humphry Davy",
+          yearDiscovered: 1807,
+        },
+        {
+          number: 12,
+          symbol: "Mg",
+          name: "Magnesium",
+          category: "alkaline-earth",
+          mass: 24.31,
+          period: 3,
+          group: 2,
+          electronConfig: "[Ne]3s²",
+          electronegativity: 1.31,
+          density: 1.738,
+          meltingPoint: 650,
+          boilingPoint: 1090,
+          discoveredBy: "Joseph Black",
+          yearDiscovered: 1755,
+        },
+        {
+          number: 13,
+          symbol: "Al",
+          name: "Aluminum",
+          category: "post-transition",
+          mass: 26.98,
+          period: 3,
+          group: 13,
+          electronConfig: "[Ne]3s²3p¹",
+          electronegativity: 1.61,
+          density: 2.698,
+          meltingPoint: 660.32,
+          boilingPoint: 2519,
+          discoveredBy: "Hans Christian Ørsted",
+          yearDiscovered: 1825,
+        },
+        {
+          number: 14,
+          symbol: "Si",
+          name: "Silicon",
+          category: "metalloid",
+          mass: 28.09,
+          period: 3,
+          group: 14,
+          electronConfig: "[Ne]3s²3p²",
+          electronegativity: 1.9,
+          density: 2.3296,
+          meltingPoint: 1414,
+          boilingPoint: 3265,
+          discoveredBy: "Jöns Jacob Berzelius",
+          yearDiscovered: 1824,
+        },
+        {
+          number: 15,
+          symbol: "P",
+          name: "Phosphorus",
+          category: "nonmetal",
+          mass: 30.97,
+          period: 3,
+          group: 15,
+          electronConfig: "[Ne]3s²3p³",
+          electronegativity: 2.19,
+          density: 1.82,
+          meltingPoint: 44.15,
+          boilingPoint: 280.5,
+          discoveredBy: "Hennig Brand",
+          yearDiscovered: 1669,
+        },
+        {
+          number: 16,
+          symbol: "S",
+          name: "Sulfur",
+          category: "nonmetal",
+          mass: 32.07,
+          period: 3,
+          group: 16,
+          electronConfig: "[Ne]3s²3p⁴",
+          electronegativity: 2.58,
+          density: 2.067,
+          meltingPoint: 115.21,
+          boilingPoint: 444.72,
+          discoveredBy: "Known to prehistoric humans",
+          yearDiscovered: null,
+        },
+        {
+          number: 17,
+          symbol: "Cl",
+          name: "Chlorine",
+          category: "nonmetal",
+          mass: 35.45,
+          period: 3,
+          group: 17,
+          electronConfig: "[Ne]3s²3p⁵",
+          electronegativity: 3.16,
+          density: 0.003214,
+          meltingPoint: -101.5,
+          boilingPoint: -34.04,
+          discoveredBy: "Carl Wilhelm Scheele",
+          yearDiscovered: 1774,
+        },
+        {
+          number: 18,
+          symbol: "Ar",
+          name: "Argon",
+          category: "noble-gas",
+          mass: 39.95,
+          period: 3,
+          group: 18,
+          electronConfig: "[Ne]3s²3p⁶",
+          electronegativity: null,
+          density: 0.0017837,
+          meltingPoint: -189.35,
+          boilingPoint: -185.85,
+          discoveredBy: "Lord Rayleigh",
+          yearDiscovered: 1894,
+        },
+        {
+          number: 19,
+          symbol: "K",
+          name: "Potassium",
+          category: "alkali-metal",
+          mass: 39.1,
+          period: 4,
+          group: 1,
+          electronConfig: "[Ar]4s¹",
+          electronegativity: 0.82,
+          density: 0.862,
+          meltingPoint: 63.38,
+          boilingPoint: 759,
+          discoveredBy: "Humphry Davy",
+          yearDiscovered: 1807,
+        },
+        {
+          number: 20,
+          symbol: "Ca",
+          name: "Calcium",
+          category: "alkaline-earth",
+          mass: 40.08,
+          period: 4,
+          group: 2,
+          electronConfig: "[Ar]4s²",
+          electronegativity: 1.0,
+          density: 1.54,
+          meltingPoint: 842,
+          boilingPoint: 1484,
+          discoveredBy: "Humphry Davy",
+          yearDiscovered: 1808,
+        },
+        {
+          number: 21,
+          symbol: "Sc",
+          name: "Scandium",
+          category: "transition-metal",
+          mass: 44.96,
+          period: 4,
+          group: 3,
+          electronConfig: "[Ar]3d¹4s²",
+          electronegativity: 1.36,
+          density: 2.985,
+          meltingPoint: 1541,
+          boilingPoint: 2830,
+          discoveredBy: "Lars Fredrik Nilson",
+          yearDiscovered: 1879,
+        },
+        {
+          number: 22,
+          symbol: "Ti",
+          name: "Titanium",
+          category: "transition-metal",
+          mass: 47.87,
+          period: 4,
+          group: 4,
+          electronConfig: "[Ar]3d²4s²",
+          electronegativity: 1.54,
+          density: 4.507,
+          meltingPoint: 1668,
+          boilingPoint: 3287,
+          discoveredBy: "William Gregor",
+          yearDiscovered: 1791,
+        },
+        {
+          number: 23,
+          symbol: "V",
+          name: "Vanadium",
+          category: "transition-metal",
+          mass: 50.94,
+          period: 4,
+          group: 5,
+          electronConfig: "[Ar]3d³4s²",
+          electronegativity: 1.63,
+          density: 6.11,
+          meltingPoint: 1910,
+          boilingPoint: 3407,
+          discoveredBy: "Andrés Manuel del Río",
+          yearDiscovered: 1801,
+        },
+        {
+          number: 24,
+          symbol: "Cr",
+          name: "Chromium",
+          category: "transition-metal",
+          mass: 52.0,
+          period: 4,
+          group: 6,
+          electronConfig: "[Ar]3d⁵4s¹",
+          electronegativity: 1.66,
+          density: 7.14,
+          meltingPoint: 1907,
+          boilingPoint: 2671,
+          discoveredBy: "Louis Nicolas Vauquelin",
+          yearDiscovered: 1797,
+        },
+        {
+          number: 25,
+          symbol: "Mn",
+          name: "Manganese",
+          category: "transition-metal",
+          mass: 54.94,
+          period: 4,
+          group: 7,
+          electronConfig: "[Ar]3d⁵4s²",
+          electronegativity: 1.55,
+          density: 7.47,
+          meltingPoint: 1246,
+          boilingPoint: 2061,
+          discoveredBy: "Johan Gottlieb Gahn",
+          yearDiscovered: 1774,
+        },
+        {
+          number: 26,
+          symbol: "Fe",
+          name: "Iron",
+          category: "transition-metal",
+          mass: 55.85,
+          period: 4,
+          group: 8,
+          electronConfig: "[Ar]3d⁶4s²",
+          electronegativity: 1.83,
+          density: 7.874,
+          meltingPoint: 1538,
+          boilingPoint: 2862,
+          discoveredBy: "Known to prehistoric humans",
+          yearDiscovered: null,
+        },
+        {
+          number: 27,
+          symbol: "Co",
+          name: "Cobalt",
+          category: "transition-metal",
+          mass: 58.93,
+          period: 4,
+          group: 9,
+          electronConfig: "[Ar]3d⁷4s²",
+          electronegativity: 1.88,
+          density: 8.9,
+          meltingPoint: 1495,
+          boilingPoint: 2927,
+          discoveredBy: "Georg Brandt",
+          yearDiscovered: 1735,
+        },
+        {
+          number: 28,
+          symbol: "Ni",
+          name: "Nickel",
+          category: "transition-metal",
+          mass: 58.69,
+          period: 4,
+          group: 10,
+          electronConfig: "[Ar]3d⁸4s²",
+          electronegativity: 1.91,
+          density: 8.908,
+          meltingPoint: 1455,
+          boilingPoint: 2913,
+          discoveredBy: "Axel Fredrik Cronstedt",
+          yearDiscovered: 1751,
+        },
+        {
+          number: 29,
+          symbol: "Cu",
+          name: "Copper",
+          category: "transition-metal",
+          mass: 63.55,
+          period: 4,
+          group: 11,
+          electronConfig: "[Ar]3d¹⁰4s¹",
+          electronegativity: 1.9,
+          density: 8.96,
+          meltingPoint: 1084.62,
+          boilingPoint: 2562,
+          discoveredBy: "Known to prehistoric humans",
+          yearDiscovered: null,
+        },
+        {
+          number: 30,
+          symbol: "Zn",
+          name: "Zinc",
+          category: "transition-metal",
+          mass: 65.38,
+          period: 4,
+          group: 12,
+          electronConfig: "[Ar]3d¹⁰4s²",
+          electronegativity: 1.65,
+          density: 7.14,
+          meltingPoint: 419.53,
+          boilingPoint: 907,
+          discoveredBy: "Indian metallurgists",
+          yearDiscovered: 1000,
+        },
+        {
+          number: 31,
+          symbol: "Ga",
+          name: "Gallium",
+          category: "post-transition",
+          mass: 69.72,
+          period: 4,
+          group: 13,
+          electronConfig: "[Ar]3d¹⁰4s²4p¹",
+          electronegativity: 1.81,
+          density: 5.91,
+          meltingPoint: 29.76,
+          boilingPoint: 2400,
+          discoveredBy: "Paul-Émile Lecoq de Boisbaudran",
+          yearDiscovered: 1875,
+        },
+        {
+          number: 32,
+          symbol: "Ge",
+          name: "Germanium",
+          category: "metalloid",
+          mass: 72.63,
+          period: 4,
+          group: 14,
+          electronConfig: "[Ar]3d¹⁰4s²4p²",
+          electronegativity: 2.01,
+          density: 5.323,
+          meltingPoint: 938.25,
+          boilingPoint: 2833,
+          discoveredBy: "Clemens Winkler",
+          yearDiscovered: 1886,
+        },
+        {
+          number: 33,
+          symbol: "As",
+          name: "Arsenic",
+          category: "metalloid",
+          mass: 74.92,
+          period: 4,
+          group: 15,
+          electronConfig: "[Ar]3d¹⁰4s²4p³",
+          electronegativity: 2.18,
+          density: 5.727,
+          meltingPoint: 817,
+          boilingPoint: 614,
+          discoveredBy: "Known to prehistoric humans",
+          yearDiscovered: null,
+        },
+        {
+          number: 34,
+          symbol: "Se",
+          name: "Selenium",
+          category: "nonmetal",
+          mass: 78.97,
+          period: 4,
+          group: 16,
+          electronConfig: "[Ar]3d¹⁰4s²4p⁴",
+          electronegativity: 2.55,
+          density: 4.819,
+          meltingPoint: 221,
+          boilingPoint: 685,
+          discoveredBy: "Jöns Jacob Berzelius",
+          yearDiscovered: 1817,
+        },
+        {
+          number: 35,
+          symbol: "Br",
+          name: "Bromine",
+          category: "nonmetal",
+          mass: 79.9,
+          period: 4,
+          group: 17,
+          electronConfig: "[Ar]3d¹⁰4s²4p⁵",
+          electronegativity: 2.96,
+          density: 3.12,
+          meltingPoint: -7.2,
+          boilingPoint: 58.8,
+          discoveredBy: "Antoine Jérôme Balard",
+          yearDiscovered: 1826,
+        },
+        {
+          number: 36,
+          symbol: "Kr",
+          name: "Krypton",
+          category: "noble-gas",
+          mass: 83.8,
+          period: 4,
+          group: 18,
+          electronConfig: "[Ar]3d¹⁰4s²4p⁶",
+          electronegativity: null,
+          density: 0.003733,
+          meltingPoint: -157.36,
+          boilingPoint: -153.22,
+          discoveredBy: "William Ramsay",
+          yearDiscovered: 1898,
+        },
+        {
+          number: 37,
+          symbol: "Rb",
+          name: "Rubidium",
+          category: "alkali-metal",
+          mass: 85.47,
+          period: 5,
+          group: 1,
+          electronConfig: "[Kr]5s¹",
+          electronegativity: 0.82,
+          density: 1.532,
+          meltingPoint: 39.31,
+          boilingPoint: 688,
+          discoveredBy: "Robert Bunsen",
+          yearDiscovered: 1861,
+        },
+        {
+          number: 38,
+          symbol: "Sr",
+          name: "Strontium",
+          category: "alkaline-earth",
+          mass: 87.62,
+          period: 5,
+          group: 2,
+          electronConfig: "[Kr]5s²",
+          electronegativity: 0.95,
+          density: 2.64,
+          meltingPoint: 777,
+          boilingPoint: 1382,
+          discoveredBy: "William Cruickshank",
+          yearDiscovered: 1790,
+        },
+        {
+          number: 39,
+          symbol: "Y",
+          name: "Yttrium",
+          category: "transition-metal",
+          mass: 88.91,
+          period: 5,
+          group: 3,
+          electronConfig: "[Kr]4d¹5s²",
+          electronegativity: 1.22,
+          density: 4.47,
+          meltingPoint: 1526,
+          boilingPoint: 3345,
+          discoveredBy: "Johan Gadolin",
+          yearDiscovered: 1794,
+        },
+        {
+          number: 40,
+          symbol: "Zr",
+          name: "Zirconium",
+          category: "transition-metal",
+          mass: 91.22,
+          period: 5,
+          group: 4,
+          electronConfig: "[Kr]4d²5s²",
+          electronegativity: 1.33,
+          density: 6.51,
+          meltingPoint: 1855,
+          boilingPoint: 4409,
+          discoveredBy: "Martin Heinrich Klaproth",
+          yearDiscovered: 1789,
+        },
+        {
+          number: 41,
+          symbol: "Nb",
+          name: "Niobium",
+          category: "transition-metal",
+          mass: 92.91,
+          period: 5,
+          group: 5,
+          electronConfig: "[Kr]4d⁴5s¹",
+          electronegativity: 1.6,
+          density: 8.57,
+          meltingPoint: 2477,
+          boilingPoint: 4744,
+          discoveredBy: "Charles Hatchett",
+          yearDiscovered: 1801,
+        },
+        {
+          number: 42,
+          symbol: "Mo",
+          name: "Molybdenum",
+          category: "transition-metal",
+          mass: 95.95,
+          period: 5,
+          group: 6,
+          electronConfig: "[Kr]4d⁵5s¹",
+          electronegativity: 2.16,
+          density: 10.22,
+          meltingPoint: 2623,
+          boilingPoint: 4639,
+          discoveredBy: "Carl Wilhelm Scheele",
+          yearDiscovered: 1778,
+        },
+        {
+          number: 43,
+          symbol: "Tc",
+          name: "Technetium",
+          category: "transition-metal",
+          mass: 98,
+          period: 5,
+          group: 7,
+          electronConfig: "[Kr]4d⁵5s²",
+          electronegativity: 1.9,
+          density: 11.5,
+          meltingPoint: 2157,
+          boilingPoint: 4265,
+          discoveredBy: "Carlo Perrier",
+          yearDiscovered: 1937,
+        },
+        {
+          number: 44,
+          symbol: "Ru",
+          name: "Ruthenium",
+          category: "transition-metal",
+          mass: 101.07,
+          period: 5,
+          group: 8,
+          electronConfig: "[Kr]4d⁷5s¹",
+          electronegativity: 2.2,
+          density: 12.37,
+          meltingPoint: 2334,
+          boilingPoint: 4150,
+          discoveredBy: "Karl Ernst Claus",
+          yearDiscovered: 1844,
+        },
+        {
+          number: 45,
+          symbol: "Rh",
+          name: "Rhodium",
+          category: "transition-metal",
+          mass: 102.91,
+          period: 5,
+          group: 9,
+          electronConfig: "[Kr]4d⁸5s¹",
+          electronegativity: 2.28,
+          density: 12.41,
+          meltingPoint: 1964,
+          boilingPoint: 3695,
+          discoveredBy: "William Hyde Wollaston",
+          yearDiscovered: 1803,
+        },
+        {
+          number: 46,
+          symbol: "Pd",
+          name: "Palladium",
+          category: "transition-metal",
+          mass: 106.42,
+          period: 5,
+          group: 10,
+          electronConfig: "[Kr]4d¹⁰",
+          electronegativity: 2.2,
+          density: 12.02,
+          meltingPoint: 1554.9,
+          boilingPoint: 2963,
+          discoveredBy: "William Hyde Wollaston",
+          yearDiscovered: 1803,
+        },
+        {
+          number: 47,
+          symbol: "Ag",
+          name: "Silver",
+          category: "transition-metal",
+          mass: 107.87,
+          period: 5,
+          group: 11,
+          electronConfig: "[Kr]4d¹⁰5s¹",
+          electronegativity: 1.93,
+          density: 10.49,
+          meltingPoint: 961.78,
+          boilingPoint: 2162,
+          discoveredBy: "Known to prehistoric humans",
+          yearDiscovered: null,
+        },
+        {
+          number: 48,
+          symbol: "Cd",
+          name: "Cadmium",
+          category: "transition-metal",
+          mass: 112.41,
+          period: 5,
+          group: 12,
+          electronConfig: "[Kr]4d¹⁰5s²",
+          electronegativity: 1.69,
+          density: 8.65,
+          meltingPoint: 321.07,
+          boilingPoint: 767,
+          discoveredBy: "Karl Samuel Leberecht Hermann",
+          yearDiscovered: 1817,
+        },
+        {
+          number: 49,
+          symbol: "In",
+          name: "Indium",
+          category: "post-transition",
+          mass: 114.82,
+          period: 5,
+          group: 13,
+          electronConfig: "[Kr]4d¹⁰5s²5p¹",
+          electronegativity: 1.78,
+          density: 7.31,
+          meltingPoint: 156.6,
+          boilingPoint: 2072,
+          discoveredBy: "Ferdinand Reich",
+          yearDiscovered: 1863,
+        },
+        {
+          number: 50,
+          symbol: "Sn",
+          name: "Tin",
+          category: "post-transition",
+          mass: 118.71,
+          period: 5,
+          group: 14,
+          electronConfig: "[Kr]4d¹⁰5s²5p²",
+          electronegativity: 1.96,
+          density: 7.31,
+          meltingPoint: 231.93,
+          boilingPoint: 2602,
+          discoveredBy: "Known to prehistoric humans",
+          yearDiscovered: null,
+        },
+        {
+          number: 51,
+          symbol: "Sb",
+          name: "Antimony",
+          category: "metalloid",
+          mass: 121.76,
+          period: 5,
+          group: 15,
+          electronConfig: "[Kr]4d¹⁰5s²5p³",
+          electronegativity: 2.05,
+          density: 6.697,
+          meltingPoint: 630.63,
+          boilingPoint: 1587,
+          discoveredBy: "Known to prehistoric humans",
+          yearDiscovered: null,
+        },
+        {
+          number: 52,
+          symbol: "Te",
+          name: "Tellurium",
+          category: "metalloid",
+          mass: 127.6,
+          period: 5,
+          group: 16,
+          electronConfig: "[Kr]4d¹⁰5s²5p⁴",
+          electronegativity: 2.1,
+          density: 6.24,
+          meltingPoint: 449.51,
+          boilingPoint: 988,
+          discoveredBy: "Franz-Joseph Müller von Reichenstein",
+          yearDiscovered: 1782,
+        },
+        {
+          number: 53,
+          symbol: "I",
+          name: "Iodine",
+          category: "nonmetal",
+          mass: 126.9,
+          period: 5,
+          group: 17,
+          electronConfig: "[Kr]4d¹⁰5s²5p⁵",
+          electronegativity: 2.66,
+          density: 4.94,
+          meltingPoint: 113.7,
+          boilingPoint: 184.3,
+          discoveredBy: "Bernard Courtois",
+          yearDiscovered: 1811,
+        },
+        {
+          number: 54,
+          symbol: "Xe",
+          name: "Xenon",
+          category: "noble-gas",
+          mass: 131.29,
+          period: 5,
+          group: 18,
+          electronConfig: "[Kr]4d¹⁰5s²5p⁶",
+          electronegativity: null,
+          density: 0.005887,
+          meltingPoint: -111.8,
+          boilingPoint: -108.1,
+          discoveredBy: "William Ramsay",
+          yearDiscovered: 1898,
+        },
+        {
+          number: 55,
+          symbol: "Cs",
+          name: "Cesium",
+          category: "alkali-metal",
+          mass: 132.91,
+          period: 6,
+          group: 1,
+          electronConfig: "[Xe]6s¹",
+          electronegativity: 0.79,
+          density: 1.93,
+          meltingPoint: 28.44,
+          boilingPoint: 671,
+          discoveredBy: "Robert Bunsen",
+          yearDiscovered: 1860,
+        },
+        {
+          number: 56,
+          symbol: "Ba",
+          name: "Barium",
+          category: "alkaline-earth",
+          mass: 137.33,
+          period: 6,
+          group: 2,
+          electronConfig: "[Xe]6s²",
+          electronegativity: 0.89,
+          density: 3.62,
+          meltingPoint: 727,
+          boilingPoint: 1897,
+          discoveredBy: "Carl Wilhelm Scheele",
+          yearDiscovered: 1774,
+        },
+        {
+          number: 57,
+          symbol: "La",
+          name: "Lanthanum",
+          category: "lanthanoid",
+          mass: 138.91,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]5d¹6s²",
+          electronegativity: 1.1,
+          density: 6.15,
+          meltingPoint: 920,
+          boilingPoint: 3464,
+          discoveredBy: "Carl Gustaf Mosander",
+          yearDiscovered: 1839,
+        },
+        {
+          number: 58,
+          symbol: "Ce",
+          name: "Cerium",
+          category: "lanthanoid",
+          mass: 140.12,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]4f¹5d¹6s²",
+          electronegativity: 1.12,
+          density: 6.77,
+          meltingPoint: 795,
+          boilingPoint: 3443,
+          discoveredBy: "Martin Heinrich Klaproth",
+          yearDiscovered: 1803,
+        },
+        {
+          number: 59,
+          symbol: "Pr",
+          name: "Praseodymium",
+          category: "lanthanoid",
+          mass: 140.91,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]4f³6s²",
+          electronegativity: 1.13,
+          density: 6.77,
+          meltingPoint: 931,
+          boilingPoint: 3520,
+          discoveredBy: "Carl Auer von Welsbach",
+          yearDiscovered: 1885,
+        },
+        {
+          number: 60,
+          symbol: "Nd",
+          name: "Neodymium",
+          category: "lanthanoid",
+          mass: 144.24,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]4f⁴6s²",
+          electronegativity: 1.14,
+          density: 7.01,
+          meltingPoint: 1021,
+          boilingPoint: 3074,
+          discoveredBy: "Carl Auer von Welsbach",
+          yearDiscovered: 1885,
+        },
+        {
+          number: 61,
+          symbol: "Pm",
+          name: "Promethium",
+          category: "lanthanoid",
+          mass: 145,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]4f⁵6s²",
+          electronegativity: 1.13,
+          density: 7.26,
+          meltingPoint: 1042,
+          boilingPoint: 3000,
+          discoveredBy: "Jacob A. Marinsky",
+          yearDiscovered: 1945,
+        },
+        {
+          number: 62,
+          symbol: "Sm",
+          name: "Samarium",
+          category: "lanthanoid",
+          mass: 150.36,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]4f⁶6s²",
+          electronegativity: 1.17,
+          density: 7.52,
+          meltingPoint: 1074,
+          boilingPoint: 1794,
+          discoveredBy: "Paul Émile Lecoq de Boisbaudran",
+          yearDiscovered: 1879,
+        },
+        {
+          number: 63,
+          symbol: "Eu",
+          name: "Europium",
+          category: "lanthanoid",
+          mass: 151.96,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]4f⁷6s²",
+          electronegativity: 1.2,
+          density: 5.24,
+          meltingPoint: 822,
+          boilingPoint: 1527,
+          discoveredBy: "Eugène-Anatole Demarçay",
+          yearDiscovered: 1901,
+        },
+        {
+          number: 64,
+          symbol: "Gd",
+          name: "Gadolinium",
+          category: "lanthanoid",
+          mass: 157.25,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]4f⁷5d¹6s²",
+          electronegativity: 1.2,
+          density: 7.9,
+          meltingPoint: 1313,
+          boilingPoint: 3273,
+          discoveredBy: "Jean Charles Galissard de Marignac",
+          yearDiscovered: 1880,
+        },
+        {
+          number: 65,
+          symbol: "Tb",
+          name: "Terbium",
+          category: "lanthanoid",
+          mass: 158.93,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]4f⁹6s²",
+          electronegativity: 1.2,
+          density: 8.23,
+          meltingPoint: 1356,
+          boilingPoint: 3230,
+          discoveredBy: "Carl Gustaf Mosander",
+          yearDiscovered: 1843,
+        },
+        {
+          number: 66,
+          symbol: "Dy",
+          name: "Dysprosium",
+          category: "lanthanoid",
+          mass: 162.5,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]4f¹⁰6s²",
+          electronegativity: 1.22,
+          density: 8.55,
+          meltingPoint: 1412,
+          boilingPoint: 2567,
+          discoveredBy: "Paul Émile Lecoq de Boisbaudran",
+          yearDiscovered: 1886,
+        },
+        {
+          number: 67,
+          symbol: "Ho",
+          name: "Holmium",
+          category: "lanthanoid",
+          mass: 164.93,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]4f¹¹6s²",
+          electronegativity: 1.23,
+          density: 8.8,
+          meltingPoint: 1474,
+          boilingPoint: 2700,
+          discoveredBy: "Marc Delafontaine",
+          yearDiscovered: 1878,
+        },
+        {
+          number: 68,
+          symbol: "Er",
+          name: "Erbium",
+          category: "lanthanoid",
+          mass: 167.26,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]4f¹²6s²",
+          electronegativity: 1.24,
+          density: 9.07,
+          meltingPoint: 1497,
+          boilingPoint: 2868,
+          discoveredBy: "Carl Gustaf Mosander",
+          yearDiscovered: 1843,
+        },
+        {
+          number: 69,
+          symbol: "Tm",
+          name: "Thulium",
+          category: "lanthanoid",
+          mass: 168.93,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]4f¹³6s²",
+          electronegativity: 1.25,
+          density: 9.32,
+          meltingPoint: 1545,
+          boilingPoint: 1950,
+          discoveredBy: "Per Teodor Cleve",
+          yearDiscovered: 1879,
+        },
+        {
+          number: 70,
+          symbol: "Yb",
+          name: "Ytterbium",
+          category: "lanthanoid",
+          mass: 173.05,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]4f¹⁴6s²",
+          electronegativity: 1.1,
+          density: 6.9,
+          meltingPoint: 819,
+          boilingPoint: 1196,
+          discoveredBy: "Jean Charles Galissard de Marignac",
+          yearDiscovered: 1878,
+        },
+        {
+          number: 71,
+          symbol: "Lu",
+          name: "Lutetium",
+          category: "lanthanoid",
+          mass: 174.97,
+          period: 6,
+          group: 3,
+          electronConfig: "[Xe]4f¹⁴5d¹6s²",
+          electronegativity: 1.27,
+          density: 9.84,
+          meltingPoint: 1663,
+          boilingPoint: 3402,
+          discoveredBy: "Georges Urbain",
+          yearDiscovered: 1907,
+        },
+        {
+          number: 72,
+          symbol: "Hf",
+          name: "Hafnium",
+          category: "transition-metal",
+          mass: 178.49,
+          period: 6,
+          group: 4,
+          electronConfig: "[Xe]4f¹⁴5d²6s²",
+          electronegativity: 1.3,
+          density: 13.31,
+          meltingPoint: 2233,
+          boilingPoint: 4603,
+          discoveredBy: "Dirk Coster",
+          yearDiscovered: 1923,
+        },
+        {
+          number: 73,
+          symbol: "Ta",
+          name: "Tantalum",
+          category: "transition-metal",
+          mass: 180.95,
+          period: 6,
+          group: 5,
+          electronConfig: "[Xe]4f¹⁴5d³6s²",
+          electronegativity: 1.5,
+          density: 16.65,
+          meltingPoint: 3017,
+          boilingPoint: 5458,
+          discoveredBy: "Anders Gustaf Ekeberg",
+          yearDiscovered: 1802,
+        },
+        {
+          number: 74,
+          symbol: "W",
+          name: "Tungsten",
+          category: "transition-metal",
+          mass: 183.84,
+          period: 6,
+          group: 6,
+          electronConfig: "[Xe]4f¹⁴5d⁴6s²",
+          electronegativity: 2.36,
+          density: 19.25,
+          meltingPoint: 3422,
+          boilingPoint: 5555,
+          discoveredBy: "Carl Wilhelm Scheele",
+          yearDiscovered: 1783,
+        },
+        {
+          number: 75,
+          symbol: "Re",
+          name: "Rhenium",
+          category: "transition-metal",
+          mass: 186.21,
+          period: 6,
+          group: 7,
+          electronConfig: "[Xe]4f¹⁴5d⁵6s²",
+          electronegativity: 1.9,
+          density: 21.02,
+          meltingPoint: 3186,
+          boilingPoint: 5596,
+          discoveredBy: "Masataka Ogawa",
+          yearDiscovered: 1908,
+        },
+        {
+          number: 76,
+          symbol: "Os",
+          name: "Osmium",
+          category: "transition-metal",
+          mass: 190.23,
+          period: 6,
+          group: 8,
+          electronConfig: "[Xe]4f¹⁴5d⁶6s²",
+          electronegativity: 2.2,
+          density: 22.59,
+          meltingPoint: 3033,
+          boilingPoint: 5012,
+          discoveredBy: "Smithson Tennant",
+          yearDiscovered: 1803,
+        },
+        {
+          number: 77,
+          symbol: "Ir",
+          name: "Iridium",
+          category: "transition-metal",
+          mass: 192.22,
+          period: 6,
+          group: 9,
+          electronConfig: "[Xe]4f¹⁴5d⁷6s²",
+          electronegativity: 2.2,
+          density: 22.56,
+          meltingPoint: 2466,
+          boilingPoint: 4428,
+          discoveredBy: "Smithson Tennant",
+          yearDiscovered: 1803,
+        },
+        {
+          number: 78,
+          symbol: "Pt",
+          name: "Platinum",
+          category: "transition-metal",
+          mass: 195.08,
+          period: 6,
+          group: 10,
+          electronConfig: "[Xe]4f¹⁴5d⁹6s¹",
+          electronegativity: 2.28,
+          density: 21.45,
+          meltingPoint: 1768.3,
+          boilingPoint: 3825,
+          discoveredBy: "Antonio de Ulloa",
+          yearDiscovered: 1735,
+        },
+        {
+          number: 79,
+          symbol: "Au",
+          name: "Gold",
+          category: "transition-metal",
+          mass: 196.97,
+          period: 6,
+          group: 11,
+          electronConfig: "[Xe]4f¹⁴5d¹⁰6s¹",
+          electronegativity: 2.54,
+          density: 19.32,
+          meltingPoint: 1064.18,
+          boilingPoint: 2856,
+          discoveredBy: "Known to prehistoric humans",
+          yearDiscovered: null,
+        },
+        {
+          number: 80,
+          symbol: "Hg",
+          name: "Mercury",
+          category: "transition-metal",
+          mass: 200.59,
+          period: 6,
+          group: 12,
+          electronConfig: "[Xe]4f¹⁴5d¹⁰6s²",
+          electronegativity: 2.0,
+          density: 13.534,
+          meltingPoint: -38.83,
+          boilingPoint: 356.73,
+          discoveredBy: "Known to prehistoric humans",
+          yearDiscovered: null,
+        },
+        {
+          number: 81,
+          symbol: "Tl",
+          name: "Thallium",
+          category: "post-transition",
+          mass: 204.38,
+          period: 6,
+          group: 13,
+          electronConfig: "[Xe]4f¹⁴5d¹⁰6s²6p¹",
+          electronegativity: 1.62,
+          density: 11.85,
+          meltingPoint: 304,
+          boilingPoint: 1473,
+          discoveredBy: "William Crookes",
+          yearDiscovered: 1861,
+        },
+        {
+          number: 82,
+          symbol: "Pb",
+          name: "Lead",
+          category: "post-transition",
+          mass: 207.2,
+          period: 6,
+          group: 14,
+          electronConfig: "[Xe]4f¹⁴5d¹⁰6s²6p²",
+          electronegativity: 2.33,
+          density: 11.34,
+          meltingPoint: 327.46,
+          boilingPoint: 1749,
+          discoveredBy: "Known to prehistoric humans",
+          yearDiscovered: null,
+        },
+        {
+          number: 83,
+          symbol: "Bi",
+          name: "Bismuth",
+          category: "post-transition",
+          mass: 208.98,
+          period: 6,
+          group: 15,
+          electronConfig: "[Xe]4f¹⁴5d¹⁰6s²6p³",
+          electronegativity: 2.02,
+          density: 9.78,
+          meltingPoint: 271.3,
+          boilingPoint: 1564,
+          discoveredBy: "Claude François Geoffroy",
+          yearDiscovered: 1753,
+        },
+        {
+          number: 84,
+          symbol: "Po",
+          name: "Polonium",
+          category: "post-transition",
+          mass: 209,
+          period: 6,
+          group: 16,
+          electronConfig: "[Xe]4f¹⁴5d¹⁰6s²6p⁴",
+          electronegativity: 2.0,
+          density: 9.196,
+          meltingPoint: 254,
+          boilingPoint: 962,
+          discoveredBy: "Marie Curie",
+          yearDiscovered: 1898,
+        },
+        {
+          number: 85,
+          symbol: "At",
+          name: "Astatine",
+          category: "halogen",
+          mass: 210,
+          period: 6,
+          group: 17,
+          electronConfig: "[Xe]4f¹⁴5d¹⁰6s²6p⁵",
+          electronegativity: 2.2,
+          density: 7,
+          meltingPoint: 302,
+          boilingPoint: 337,
+          discoveredBy: "Dale R. Corson",
+          yearDiscovered: 1940,
+        },
+        {
+          number: 86,
+          symbol: "Rn",
+          name: "Radon",
+          category: "noble-gas",
+          mass: 222,
+          period: 6,
+          group: 18,
+          electronConfig: "[Xe]4f¹⁴5d¹⁰6s²6p⁶",
+          electronegativity: null,
+          density: 0.00973,
+          meltingPoint: -71,
+          boilingPoint: -61.7,
+          discoveredBy: "Friedrich Ernst Dorn",
+          yearDiscovered: 1900,
+        },
+        {
+          number: 87,
+          symbol: "Fr",
+          name: "Francium",
+          category: "alkali-metal",
+          mass: 223,
+          period: 7,
+          group: 1,
+          electronConfig: "[Rn]7s¹",
+          electronegativity: 0.7,
+          density: 1.87,
+          meltingPoint: 27,
+          boilingPoint: 677,
+          discoveredBy: "Marguerite Perey",
+          yearDiscovered: 1939,
+        },
+        {
+          number: 88,
+          symbol: "Ra",
+          name: "Radium",
+          category: "alkaline-earth",
+          mass: 226,
+          period: 7,
+          group: 2,
+          electronConfig: "[Rn]7s²",
+          electronegativity: 0.9,
+          density: 5.5,
+          meltingPoint: 700,
+          boilingPoint: 1737,
+          discoveredBy: "Marie Curie",
+          yearDiscovered: 1898,
+        },
+        {
+          number: 89,
+          symbol: "Ac",
+          name: "Actinium",
+          category: "actinoid",
+          mass: 227,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]6d¹7s²",
+          electronegativity: 1.1,
+          density: 10.07,
+          meltingPoint: 1050,
+          boilingPoint: 3200,
+          discoveredBy: "André-Louis Debierne",
+          yearDiscovered: 1899,
+        },
+        {
+          number: 90,
+          symbol: "Th",
+          name: "Thorium",
+          category: "actinoid",
+          mass: 232.04,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]6d²7s²",
+          electronegativity: 1.3,
+          density: 11.72,
+          meltingPoint: 1842,
+          boilingPoint: 4788,
+          discoveredBy: "Jöns Jakob Berzelius",
+          yearDiscovered: 1829,
+        },
+        {
+          number: 91,
+          symbol: "Pa",
+          name: "Protactinium",
+          category: "actinoid",
+          mass: 231.04,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]5f²6d¹7s²",
+          electronegativity: 1.5,
+          density: 15.37,
+          meltingPoint: 1568,
+          boilingPoint: 4027,
+          discoveredBy: "William Crookes",
+          yearDiscovered: 1913,
+        },
+        {
+          number: 92,
+          symbol: "U",
+          name: "Uranium",
+          category: "actinoid",
+          mass: 238.03,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]5f³6d¹7s²",
+          electronegativity: 1.38,
+          density: 19.1,
+          meltingPoint: 1132.2,
+          boilingPoint: 4131,
+          discoveredBy: "Martin Heinrich Klaproth",
+          yearDiscovered: 1789,
+        },
+        {
+          number: 93,
+          symbol: "Np",
+          name: "Neptunium",
+          category: "actinoid",
+          mass: 237,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]5f⁴6d¹7s²",
+          electronegativity: 1.36,
+          density: 20.45,
+          meltingPoint: 644,
+          boilingPoint: 4000,
+          discoveredBy: "Edwin McMillan",
+          yearDiscovered: 1940,
+        },
+        {
+          number: 94,
+          symbol: "Pu",
+          name: "Plutonium",
+          category: "actinoid",
+          mass: 244,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]5f⁶7s²",
+          electronegativity: 1.28,
+          density: 19.84,
+          meltingPoint: 640,
+          boilingPoint: 3230,
+          discoveredBy: "Glenn T. Seaborg",
+          yearDiscovered: 1940,
+        },
+        {
+          number: 95,
+          symbol: "Am",
+          name: "Americium",
+          category: "actinoid",
+          mass: 243,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]5f⁷7s²",
+          electronegativity: 1.3,
+          density: 13.69,
+          meltingPoint: 1176,
+          boilingPoint: 2011,
+          discoveredBy: "Glenn T. Seaborg",
+          yearDiscovered: 1944,
+        },
+        {
+          number: 96,
+          symbol: "Cm",
+          name: "Curium",
+          category: "actinoid",
+          mass: 247,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]5f⁷6d¹7s²",
+          electronegativity: 1.3,
+          density: 13.51,
+          meltingPoint: 1345,
+          boilingPoint: 3110,
+          discoveredBy: "Glenn T. Seaborg",
+          yearDiscovered: 1944,
+        },
+        {
+          number: 97,
+          symbol: "Bk",
+          name: "Berkelium",
+          category: "actinoid",
+          mass: 247,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]5f⁹7s²",
+          electronegativity: 1.3,
+          density: 14.79,
+          meltingPoint: 1050,
+          boilingPoint: null,
+          discoveredBy: "Stanley G. Thompson",
+          yearDiscovered: 1949,
+        },
+        {
+          number: 98,
+          symbol: "Cf",
+          name: "Californium",
+          category: "actinoid",
+          mass: 251,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]5f¹⁰7s²",
+          electronegativity: 1.3,
+          density: 15.1,
+          meltingPoint: 900,
+          boilingPoint: null,
+          discoveredBy: "Stanley G. Thompson",
+          yearDiscovered: 1950,
+        },
+        {
+          number: 99,
+          symbol: "Es",
+          name: "Einsteinium",
+          category: "actinoid",
+          mass: 252,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]5f¹¹7s²",
+          electronegativity: 1.3,
+          density: 8.84,
+          meltingPoint: 860,
+          boilingPoint: null,
+          discoveredBy: "Albert Ghiorso",
+          yearDiscovered: 1952,
+        },
+        {
+          number: 100,
+          symbol: "Fm",
+          name: "Fermium",
+          category: "actinoid",
+          mass: 257,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]5f¹²7s²",
+          electronegativity: 1.3,
+          density: null,
+          meltingPoint: 1527,
+          boilingPoint: null,
+          discoveredBy: "Albert Ghiorso",
+          yearDiscovered: 1952,
+        },
+        {
+          number: 101,
+          symbol: "Md",
+          name: "Mendelevium",
+          category: "actinoid",
+          mass: 258,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]5f¹³7s²",
+          electronegativity: 1.3,
+          density: null,
+          meltingPoint: 827,
+          boilingPoint: null,
+          discoveredBy: "Albert Ghiorso",
+          yearDiscovered: 1955,
+        },
+        {
+          number: 102,
+          symbol: "No",
+          name: "Nobelium",
+          category: "actinoid",
+          mass: 259,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]5f¹⁴7s²",
+          electronegativity: 1.3,
+          density: null,
+          meltingPoint: 827,
+          boilingPoint: null,
+          discoveredBy: "Albert Ghiorso",
+          yearDiscovered: 1958,
+        },
+        {
+          number: 103,
+          symbol: "Lr",
+          name: "Lawrencium",
+          category: "actinoid",
+          mass: 262,
+          period: 7,
+          group: 3,
+          electronConfig: "[Rn]5f¹⁴7s²7p¹",
+          electronegativity: 1.3,
+          density: null,
+          meltingPoint: 1627,
+          boilingPoint: null,
+          discoveredBy: "Albert Ghiorso",
+          yearDiscovered: 1961,
+        },
+        {
+          number: 104,
+          symbol: "Rf",
+          name: "Rutherfordium",
+          category: "transition-metal",
+          mass: 267,
+          period: 7,
+          group: 4,
+          electronConfig: "[Rn]5f¹⁴6d²7s²",
+          electronegativity: null,
+          density: 23.2,
+          meltingPoint: 2100,
+          boilingPoint: 5500,
+          discoveredBy: "Joint Institute for Nuclear Research",
+          yearDiscovered: 1964,
+        },
+        {
+          number: 105,
+          symbol: "Db",
+          name: "Dubnium",
+          category: "transition-metal",
+          mass: 268,
+          period: 7,
+          group: 5,
+          electronConfig: "[Rn]5f¹⁴6d³7s²",
+          electronegativity: null,
+          density: 29.3,
+          meltingPoint: null,
+          boilingPoint: null,
+          discoveredBy: "Joint Institute for Nuclear Research",
+          yearDiscovered: 1967,
+        },
+        {
+          number: 106,
+          symbol: "Sg",
+          name: "Seaborgium",
+          category: "transition-metal",
+          mass: 269,
+          period: 7,
+          group: 6,
+          electronConfig: "[Rn]5f¹⁴6d⁴7s²",
+          electronegativity: null,
+          density: 35.0,
+          meltingPoint: null,
+          boilingPoint: null,
+          discoveredBy: "University of California",
+          yearDiscovered: 1974,
+        },
+        {
+          number: 107,
+          symbol: "Bh",
+          name: "Bohrium",
+          category: "transition-metal",
+          mass: 270,
+          period: 7,
+          group: 7,
+          electronConfig: "[Rn]5f¹⁴6d⁵7s²",
+          electronegativity: null,
+          density: 37.1,
+          meltingPoint: null,
+          boilingPoint: null,
+          discoveredBy: "GSI Helmholtz Centre",
+          yearDiscovered: 1981,
+        },
+        {
+          number: 108,
+          symbol: "Hs",
+          name: "Hassium",
+          category: "transition-metal",
+          mass: 269,
+          period: 7,
+          group: 8,
+          electronConfig: "[Rn]5f¹⁴6d⁶7s²",
+          electronegativity: null,
+          density: 40.7,
+          meltingPoint: null,
+          boilingPoint: null,
+          discoveredBy: "GSI Helmholtz Centre",
+          yearDiscovered: 1984,
+        },
+        {
+          number: 109,
+          symbol: "Mt",
+          name: "Meitnerium",
+          category: "transition-metal",
+          mass: 278,
+          period: 7,
+          group: 9,
+          electronConfig: "[Rn]5f¹⁴6d⁷7s²",
+          electronegativity: null,
+          density: 37.4,
+          meltingPoint: null,
+          boilingPoint: null,
+          discoveredBy: "GSI Helmholtz Centre",
+          yearDiscovered: 1982,
+        },
+        {
+          number: 110,
+          symbol: "Ds",
+          name: "Darmstadtium",
+          category: "transition-metal",
+          mass: 281,
+          period: 7,
+          group: 10,
+          electronConfig: "[Rn]5f¹⁴6d⁸7s²",
+          electronegativity: null,
+          density: 34.8,
+          meltingPoint: null,
+          boilingPoint: null,
+          discoveredBy: "GSI Helmholtz Centre",
+          yearDiscovered: 1994,
+        },
+        {
+          number: 111,
+          symbol: "Rg",
+          name: "Roentgenium",
+          category: "transition-metal",
+          mass: 282,
+          period: 7,
+          group: 11,
+          electronConfig: "[Rn]5f¹⁴6d⁹7s²",
+          electronegativity: null,
+          density: 28.7,
+          meltingPoint: null,
+          boilingPoint: null,
+          discoveredBy: "GSI Helmholtz Centre",
+          yearDiscovered: 1994,
+        },
+        {
+          number: 112,
+          symbol: "Cn",
+          name: "Copernicium",
+          category: "transition-metal",
+          mass: 285,
+          period: 7,
+          group: 12,
+          electronConfig: "[Rn]5f¹⁴6d¹⁰7s²",
+          electronegativity: null,
+          density: 23.7,
+          meltingPoint: null,
+          boilingPoint: null,
+          discoveredBy: "GSI Helmholtz Centre",
+          yearDiscovered: 1996,
+        },
+        {
+          number: 113,
+          symbol: "Nh",
+          name: "Nihonium",
+          category: "post-transition",
+          mass: 286,
+          period: 7,
+          group: 13,
+          electronConfig: "[Rn]5f¹⁴6d¹⁰7s²7p¹",
+          electronegativity: null,
+          density: 16,
+          meltingPoint: null,
+          boilingPoint: null,
+          discoveredBy: "RIKEN",
+          yearDiscovered: 2004,
+        },
+        {
+          number: 114,
+          symbol: "Fl",
+          name: "Flerovium",
+          category: "post-transition",
+          mass: 289,
+          period: 7,
+          group: 14,
+          electronConfig: "[Rn]5f¹⁴6d¹⁰7s²7p²",
+          electronegativity: null,
+          density: 14,
+          meltingPoint: null,
+          boilingPoint: null,
+          discoveredBy: "Joint Institute for Nuclear Research",
+          yearDiscovered: 1998,
+        },
+        {
+          number: 115,
+          symbol: "Mc",
+          name: "Moscovium",
+          category: "post-transition",
+          mass: 290,
+          period: 7,
+          group: 15,
+          electronConfig: "[Rn]5f¹⁴6d¹⁰7s²7p³",
+          electronegativity: null,
+          density: 13.5,
+          meltingPoint: null,
+          boilingPoint: null,
+          discoveredBy: "Joint Institute for Nuclear Research",
+          yearDiscovered: 2003,
+        },
+        {
+          number: 116,
+          symbol: "Lv",
+          name: "Livermorium",
+          category: "post-transition",
+          mass: 293,
+          period: 7,
+          group: 16,
+          electronConfig: "[Rn]5f¹⁴6d¹⁰7s²7p⁴",
+          electronegativity: null,
+          density: 12.9,
+          meltingPoint: null,
+          boilingPoint: null,
+          discoveredBy: "Joint Institute for Nuclear Research",
+          yearDiscovered: 2000,
+        },
+        {
+          number: 117,
+          symbol: "Ts",
+          name: "Tennessine",
+          category: "halogen",
+          mass: 294,
+          period: 7,
+          group: 17,
+          electronConfig: "[Rn]5f¹⁴6d¹⁰7s²7p⁵",
+          electronegativity: null,
+          density: 7.2,
+          meltingPoint: null,
+          boilingPoint: null,
+          discoveredBy: "Joint Institute for Nuclear Research",
+          yearDiscovered: 2010,
+        },
+        {
+          number: 118,
+          symbol: "Og",
+          name: "Oganesson",
+          category: "noble-gas",
+          mass: 294,
+          period: 7,
+          group: 18,
+          electronConfig: "[Rn]5f¹⁴6d¹⁰7s²7p⁶",
+          electronegativity: null,
+          density: 5.0,
+          meltingPoint: null,
+          boilingPoint: null,
+          discoveredBy: "Joint Institute for Nuclear Research",
+          yearDiscovered: 2002,
+        },
+      ];
+
+      function createPeriodicTable() {
+        const table = document.getElementById("periodicTable");
+        const totalRows = 7;
+        const totalCols = 18;
+
+        // Create a map for special positioning
+        const emptySpaces = new Set();
+        // Period 1 gaps
+        for (let col = 2; col <= 17; col++) {
+          emptySpaces.add(`1-${col}`);
+        }
+        // Period 2 gaps
+        for (let col = 3; col <= 12; col++) {
+          emptySpaces.add(`2-${col}`);
+        }
+        // Period 3 gaps
+        for (let col = 3; col <= 12; col++) {
+          emptySpaces.add(`3-${col}`);
+        }
+        // Period 4 gaps (will be filled with transition metals later)
+        for (let col = 3; col <= 12; col++) {
+          emptySpaces.add(`4-${col}`);
+        }
+
+        // Create the grid
+        for (let row = 1; row <= totalRows; row++) {
+          for (let col = 1; col <= totalCols; col++) {
+            const position = `${row}-${col}`;
+
+            // Find the element that belongs in this position
+            const element = elements.find(
+              (e) => e.period === row && e.group === col
+            );
+
+            if (element) {
+              const elementDiv = createElementDiv(element);
+              table.appendChild(elementDiv);
+            } else if (emptySpaces.has(position)) {
+              const emptyDiv = document.createElement("div");
+              emptyDiv.className = "element empty-cell";
+              table.appendChild(emptyDiv);
+            } else {
+              // For positions that should show an element but we don't have data yet
+              const placeholderDiv = document.createElement("div");
+              placeholderDiv.className = "element";
+              placeholderDiv.innerHTML = `
+                <div class="atomic-number">?</div>
+                <div class="symbol">?</div>
+                <div class="name">Coming Soon</div>
+              `;
+              table.appendChild(placeholderDiv);
+            }
+          }
+        }
+      }
+
+      function createElementDiv(element) {
+        const div = document.createElement("div");
+        div.className = `element ${element.category}`;
+        div.innerHTML = `
+                <div class="atomic-number">${element.number}</div>
+                <div class="symbol">${element.symbol}</div>
+                <div class="name">${element.name}</div>
+            `;
+
+        div.addEventListener("click", () => showElementDetails(element));
+        return div;
+      }
+
+      function showElementDetails(element) {
+        const details = document.getElementById("elementDetails");
+        const title = document.getElementById("elementTitle");
+        const info = document.getElementById("elementInfo");
+
+        // Remove selected class from all elements
+        document.querySelectorAll(".element").forEach((el) => {
+          el.classList.remove("selected");
+        });
+
+        // Find and highlight the clicked element
+        const elements = document.querySelectorAll(".element");
+        elements.forEach((el, index) => {
+          const symbol = el.querySelector(".symbol");
+          if (symbol && symbol.textContent === element.symbol) {
+            el.classList.add("selected");
+          }
+        });
+
+        title.textContent = `${element.name} (${element.symbol})`;
+
+        const detailsHTML = `
+          <div class="detail-item">
+            <h3>Atomic Number</h3>
+            <p>${element.number}</p>
+          </div>
+          <div class="detail-item">
+            <h3>Atomic Mass</h3>
+            <p>${element.mass} u</p>
+          </div>
+          <div class="detail-item">
+            <h3>Category</h3>
+            <p>${element.category
+              .replace("-", " ")
+              .replace(/\b\w/g, (l) => l.toUpperCase())}</p>
+          </div>
+          <div class="detail-item">
+            <h3>Electron Configuration</h3>
+            <p>${element.electronConfig}</p>
+          </div>
+          <div class="detail-item">
+            <h3>Electronegativity</h3>
+            <p>${element.electronegativity || "Not applicable"}</p>
+          </div>
+          <div class="detail-item">
+            <h3>Density</h3>
+            <p>${element.density} g/cm³</p>
+          </div>
+          <div class="detail-item">
+            <h3>Melting Point</h3>
+            <p>${element.meltingPoint}°C</p>
+          </div>
+          <div class="detail-item">
+            <h3>Boiling Point</h3>
+            <p>${element.boilingPoint}°C</p>
+          </div>
+          <div class="detail-item">
+            <h3>Discovered By</h3>
+            <p>${element.discoveredBy}</p>
+          </div>
+          <div class="detail-item">
+            <h3>Year Discovered</h3>
+            <p>${element.yearDiscovered || "Unknown"}</p>
+          </div>
+        `;
+
+        info.innerHTML = detailsHTML;
+        details.classList.add("active");
+      }
+
+      function setupSearch() {
+        const searchInput = document.getElementById("elementSearch");
+
+        searchInput.addEventListener("input", (e) => {
+          const searchTerm = e.target.value.toLowerCase();
+
+          elements.forEach((element, index) => {
+            const elementDiv = document.querySelector(
+              `.element:nth-child(${index + 1})`
+            );
+            if (!elementDiv.classList.contains("empty-cell")) {
+              const matches =
+                element.name.toLowerCase().includes(searchTerm) ||
+                element.symbol.toLowerCase().includes(searchTerm) ||
+                element.number.toString().includes(searchTerm);
+
+              elementDiv.style.opacity = matches ? "1" : "0.3";
+            }
+          });
+        });
+      }
+
+      // Initialize the periodic table
+      createPeriodicTable();
+      setupSearch();
+    </script>
+  </body>
+</html>

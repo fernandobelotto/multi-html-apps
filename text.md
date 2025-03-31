@@ -124,6 +124,6 @@
 
 ✅ Color Picker Tool: Select, display, and save colors chosen from a palette or image.
 
-📝 Periodic Table Guide: Provide a reference for chemical elements with basic facts.
+✅ Periodic Table Guide: Provide a reference for chemical elements with basic facts.
 
 📝 Running Pace Calculator: Input distance and time to calculate your running pace.
