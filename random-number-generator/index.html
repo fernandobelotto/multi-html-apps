@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Random Number Generator</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        background-color: #f0f2f5;
+        color: #1a1a1a;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        color: #2563eb;
+      }
+
+      .generator-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .input-group {
+        margin-bottom: 20px;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #4b5563;
+      }
+
+      .input-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .input-field {
+        flex: 1;
+      }
+
+      input[type="number"],
+      input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+
+      input[type="number"]:focus,
+      input[type="text"]:focus {
+        outline: none;
+        border-color: #2563eb;
+      }
+
+      .mode-selector {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .mode-btn {
+        padding: 10px 20px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s;
+      }
+
+      .mode-btn.active {
+        background: #2563eb;
+        color: white;
+        border-color: #2563eb;
+      }
+
+      .mode-btn:hover {
+        border-color: #2563eb;
+      }
+
+      .generate-btn {
+        width: 100%;
+        padding: 15px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .generate-btn:hover {
+        background: #1d4ed8;
+      }
+
+      .result {
+        text-align: center;
+        margin-top: 30px;
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 8px;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2563eb;
+        min-height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .history {
+        margin-top: 30px;
+      }
+
+      .history h2 {
+        color: #4b5563;
+        margin-bottom: 15px;
+        font-size: 1.5rem;
+      }
+
+      .history-list {
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .history-item {
+        padding: 10px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .history-item:last-child {
+        border-bottom: none;
+      }
+
+      .history-value {
+        font-weight: 600;
+        color: #2563eb;
+      }
+
+      .history-meta {
+        font-size: 0.9rem;
+        color: #6b7280;
+      }
+
+      .options {
+        margin-top: 20px;
+      }
+
+      .checkbox-group {
+        margin-bottom: 10px;
+      }
+
+      .checkbox-group label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+
+      @media (max-width: 600px) {
+        .input-row {
+          flex-direction: column;
+        }
+
+        .mode-selector {
+          flex-direction: column;
+        }
+
+        .mode-btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Random Number Generator</h1>
+        <p>Generate random numbers with various options and ranges</p>
+      </div>
+
+      <div class="generator-card">
+        <div class="mode-selector">
+          <button class="mode-btn active" data-mode="range">
+            Number Range
+          </button>
+          <button class="mode-btn" data-mode="dice">Dice Roll</button>
+          <button class="mode-btn" data-mode="lottery">Lottery Numbers</button>
+          <button class="mode-btn" data-mode="custom">Custom List</button>
+        </div>
+
+        <div id="rangeMode" class="mode-content">
+          <div class="input-row">
+            <div class="input-field">
+              <label for="minNumber">Minimum</label>
+              <input type="number" id="minNumber" value="1" />
+            </div>
+            <div class="input-field">
+              <label for="maxNumber">Maximum</label>
+              <input type="number" id="maxNumber" value="100" />
+            </div>
+          </div>
+        </div>
+
+        <div id="diceMode" class="mode-content" style="display: none">
+          <div class="input-field">
+            <label for="diceCount">Number of Dice</label>
+            <input type="number" id="diceCount" value="2" min="1" max="10" />
+          </div>
+        </div>
+
+        <div id="lotteryMode" class="mode-content" style="display: none">
+          <div class="input-row">
+            <div class="input-field">
+              <label for="lotteryCount">Numbers to Generate</label>
+              <input
+                type="number"
+                id="lotteryCount"
+                value="6"
+                min="1"
+                max="10"
+              />
+            </div>
+            <div class="input-field">
+              <label for="lotteryMax">Maximum Number</label>
+              <input type="number" id="lotteryMax" value="49" min="1" />
+            </div>
+          </div>
+        </div>
+
+        <div id="customMode" class="mode-content" style="display: none">
+          <div class="input-field">
+            <label for="customList">Enter items (comma-separated)</label>
+            <input
+              type="text"
+              id="customList"
+              placeholder="Item1, Item2, Item3"
+            />
+          </div>
+        </div>
+
+        <div class="options">
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="uniqueNumbers" />
+              Generate unique numbers only
+            </label>
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="sortNumbers" />
+              Sort numbers in ascending order
+            </label>
+          </div>
+        </div>
+
+        <button class="generate-btn" id="generateBtn">Generate</button>
+
+        <div class="result" id="result">Click generate to start</div>
+      </div>
+
+      <div class="history">
+        <h2>History</h2>
+        <div class="history-list" id="historyList"></div>
+      </div>
+    </div>
+
+    <script>
+      // DOM Elements
+      const modeBtns = document.querySelectorAll(".mode-btn");
+      const modeContents = document.querySelectorAll(".mode-content");
+      const generateBtn = document.getElementById("generateBtn");
+      const result = document.getElementById("result");
+      const historyList = document.getElementById("historyList");
+      const uniqueCheckbox = document.getElementById("uniqueNumbers");
+      const sortCheckbox = document.getElementById("sortNumbers");
+
+      // Current mode
+      let currentMode = "range";
+
+      // Mode switching
+      modeBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          modeBtns.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          currentMode = btn.dataset.mode;
+
+          modeContents.forEach((content) => {
+            content.style.display = "none";
+          });
+          document.getElementById(`${currentMode}Mode`).style.display = "block";
+        });
+      });
+
+      // Generate random number
+      function getRandomNumber(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      // Generate unique numbers
+      function generateUniqueNumbers(min, max, count) {
+        if (max - min + 1 < count) {
+          return null; // Not enough numbers in range
+        }
+
+        const numbers = new Set();
+        while (numbers.size < count) {
+          numbers.add(getRandomNumber(min, max));
+        }
+        return Array.from(numbers);
+      }
+
+      // Add to history
+      function addToHistory(value, mode) {
+        const historyItem = document.createElement("div");
+        historyItem.className = "history-item";
+        historyItem.innerHTML = `
+                <span class="history-value">${value}</span>
+                <span class="history-meta">${mode} • ${new Date().toLocaleTimeString()}</span>
+            `;
+        historyList.insertBefore(historyItem, historyList.firstChild);
+
+        // Keep only last 10 items
+        if (historyList.children.length > 10) {
+          historyList.removeChild(historyList.lastChild);
+        }
+      }
+
+      // Generate result
+      generateBtn.addEventListener("click", () => {
+        let generatedResult;
+
+        switch (currentMode) {
+          case "range":
+            const min = parseInt(document.getElementById("minNumber").value);
+            const max = parseInt(document.getElementById("maxNumber").value);
+
+            if (min >= max) {
+              alert("Maximum number must be greater than minimum number");
+              return;
+            }
+
+            generatedResult = getRandomNumber(min, max);
+            break;
+
+          case "dice":
+            const diceCount = parseInt(
+              document.getElementById("diceCount").value
+            );
+            const rolls = [];
+            for (let i = 0; i < diceCount; i++) {
+              rolls.push(getRandomNumber(1, 6));
+            }
+            generatedResult = `${rolls.join(" + ")} = ${rolls.reduce(
+              (a, b) => a + b,
+              0
+            )}`;
+            break;
+
+          case "lottery":
+            const numberCount = parseInt(
+              document.getElementById("lotteryCount").value
+            );
+            const maxNumber = parseInt(
+              document.getElementById("lotteryMax").value
+            );
+
+            const lotteryNumbers = generateUniqueNumbers(
+              1,
+              maxNumber,
+              numberCount
+            );
+            if (!lotteryNumbers) {
+              alert("Not enough numbers in range for unique selection");
+              return;
+            }
+
+            if (sortCheckbox.checked) {
+              lotteryNumbers.sort((a, b) => a - b);
+            }
+            generatedResult = lotteryNumbers.join(" - ");
+            break;
+
+          case "custom":
+            const items = document
+              .getElementById("customList")
+              .value.split(",")
+              .map((item) => item.trim())
+              .filter((item) => item);
+
+            if (items.length === 0) {
+              alert("Please enter at least one item");
+              return;
+            }
+
+            generatedResult = items[getRandomNumber(0, items.length - 1)];
+            break;
+        }
+
+        result.textContent = generatedResult;
+        addToHistory(generatedResult, currentMode);
+      });
+
+      // Initialize history from localStorage
+      const savedHistory = JSON.parse(
+        localStorage.getItem("randomGeneratorHistory") || "[]"
+      );
+      savedHistory.forEach((item) => {
+        addToHistory(item.value, item.mode);
+      });
+    </script>
+  </body>
+</html>
