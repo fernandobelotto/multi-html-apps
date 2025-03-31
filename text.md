@@ -122,7 +122,7 @@
 
 ✅ Digital Ruler: Use on-screen measurements for rough size estimates (based on screen dimensions).
 
-📝 Color Picker Tool: Select, display, and save colors chosen from a palette or image.
+✅ Color Picker Tool: Select, display, and save colors chosen from a palette or image.
 
 📝 Periodic Table Guide: Provide a reference for chemical elements with basic facts.
 
